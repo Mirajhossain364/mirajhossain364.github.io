@@ -1,0 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-700 dark:bg-background dark:text-slate-300 antialiased selection:bg-primary/30 selection:text-white font-sans overflow-x-hidden transition-colors duration-500;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply bg-white/70 dark:bg-white/[0.03] backdrop-blur-2xl border border-white/20 dark:border-white/10 shadow-2xl dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] transition-all duration-500;
+  }
+  .glass-card {
+    @apply bg-white/70 dark:bg-white/[0.03] backdrop-blur-xl border border-white/20 dark:border-white/10 hover:border-primary/50 hover:bg-white/90 dark:hover:bg-white/[0.05] transition-all duration-500 shadow-lg hover:shadow-2xl dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] dark:hover:shadow-[0_8px_32px_0_rgba(139,92,246,0.1)];
+  }
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-accent;
+  }
+  .nav-link {
+    @apply relative text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white transition-colors duration-300 font-medium;
+  }
+  .nav-link::after {
+    @apply content-[''] absolute left-0 -bottom-1 w-0 h-[2px] bg-primary transition-all duration-300;
+  }
+  .nav-link:hover::after, .nav-link.active::after {
+    @apply w-full;
+  }
+  .nav-link.active {
+    @apply text-slate-900 dark:text-white;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #030014;
+}
+::-webkit-scrollbar-thumb {
+  background: #2a2a4a;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3b82f6;
+}
+
+html {
+  scroll-behavior: smooth;
+}

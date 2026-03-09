@@ -1,0 +1,150 @@
+MIRAZ HOSSAIN
++8801744132580 mirajj369@gmail.com Linkedin YouTube GitHub
+Education
+• Ahsanullah University of Science and Technology (AUST) 
+B.Sc. in Electrical and Electronic Engineering(EEE) ; CGPA: 3.024/4.00
+Dhaka, Bangladesh
+Nov 2021 - Nov 2025
+Relevant Courses :Circuit Design, Power System, Control system design, MCU, Computer Architectur e, Digital Signal Processing, Mechanics of
+Material, Optical Communication, Fluid mechanics , C++ Programming, VLSI, Image Processing, Medical Device design, CA D
+• Dhaka Residential Model College
+Higher Secondary School Certificate (HSC); Science ; GPA: 5.00/5.00
+• Pabna Zilla School
+Secondary School Certificate (SSC); Science ; GPA:5.00/5.00
+Work Experience 
+• Cybernetics Hi - Tech Solution ( P v t . )Ltd.
+Embedded System Engineer – R N D Intern (Feb 2026 - present)
+◦ Responsible for verifying the technical decisions made by team members, ensuring accurate implementation and 
+compliance with industry standards.
+◦ Contributing to the design and development of Autonomous Guided Vehicles (AGVs) for agricultural and factory 
+applications, optimizing both hardware and software performance.
+◦ Involved in the study of Meter Communication protocols such as DCU, AMI, and billing methods. Focused on 
+enhancing data transmission efficiency and reliability in metering systems.
+◦ Conducting in-depth studies on STS cryptography and its implementation in the DLMS protocol for secure metering 
+solutions.
+◦ Experimenting with the implementation of a 20-digit token system for meters to enhance security and reliability in utility 
+metering.
+◦ Currently programming Cortex M0-based microcontrollers to design and implement anti-theft protection systems, 
+leveraging low-power consumption and high-performance features.
+◦ Involved in calibrating PLC modules for seamless integration and data transmission over power lines, ensuring stable 
+and accurate performance.
+◦ Contributing on integrating ROS (Robot Operating System) and Micro-ROS with embedded systems, focusing on 
+communication protocols and real-time processing in robotics.
+◦ Contributing object tracking systems for drones, enabling communication between cameras, sensors and Raspberry Pi
+for real-time object identification and navigation.
+2020
+2018
+Research Interests
+• Robotics & Automation • IoT • Embedded Systems design • Machine Learning • Communication Protocols •
+Circuit and PC B Design • Android App Development• VLSI Design • Deep Learning  
+Thesis
+• AI Adaptive PID Controller – Developed a system to control the motion of a robotic arm with adaptive AI algorithms
+Management experience
+• AUST Innovation and Design Club (IDC)
+Executive Member & Assistant Head of Project Team
+• Led technical projects, fostering innovation and effective team collaboration.
+• AUST Satellite Lab
+Founding Member
+• Supported satellite research with a focus on embedded systems design and testing.
+• AUST Model Rocketry
+Software and Navigation Team Member
+• Contributed to model rocketry system design, testing, and automation.
+Logistics experience
+• Supply Chain: Sourcing of raw materials from local markets e.g. Jonson Road, Dholaikhal, Patuatoli
+Nawabpur, Wari, Sadarghat and many obscure locations.
+• Supply Chain: Global sourcing experience: International - Digikey, JLC PCB etc . Chinese -Alibaba, Made -in-
+China, AliExpress etc.
+• Negotiation: Experience in price negotiation on chinese sourcing websites.
+• Finance: Experience in R&D and product development budget compilation.
+Undergrad Projects
+• Computer Vision Gesture-Controlled Lighting: Designed a custom PCB for a hand-gesture recognition system using 
+OpenCV and MediaPipe to facilitate touchless HMI (Human-Machine Interface) for load control.
+• 16-DOF Humanoid Robot & Android Interface: A 16-Degree-of-Freedom robot using AutoCAD for 2D frame design and 
+laser-cut fabrication; developed a custom Android application for real-time kinematic control and movement synchronization.
+• Advanced Overcurrent Protection & GSM Diagnostics: Developed an intelligent power protection system featuring GSM-
+based fault reporting and automated diagnostic alerts for electrical grid safety.
+• Vocal Navigation & Speech-Triggered Vehicle: Architected a voice-actuated control system for a mobile robot, integrating 
+Natural Language Processing (NLP) to translate speech commands into hardware execution sequences.
+• IoT Health Monitoring & Personal Safety System: A dual-purpose portable system for hazardous environments, integrating 
+GPS tracking, environmental sensors, and real-time health telemetry via IoT protocols.
+• Self-Balancing Breadboard Platform: Implemented a real-time stabilization system utilizing a Kalman Filter for sensor 
+fusion and a PID Control algorithm to maintain equilibrium on a breadboard-based chassis.
+• Distributed Smart Home Framework : Developed multi-platform automation ecosystem using Node-RED, ESP-RainMaker, 
+and SinricPro for seamless, low-latency integration of household appliances and smart loads.
+• Precision Agricultural Climate Optimizer: Integrated a multi-sensor IoT node to monitor and adjust micro-climates in 
+farming environments, focusing on environmental optimization through data-driven feedback loops.
+• Spectral Signal Analysis (Burg, Yule-Walker, Levinson-Durbin): Performed advanced frequency estimation and digital 
+signal processing on speech signals using parametric modeling techniques including Burg’s Method and Levinson-Durbin 
+recursion.
+• RFID-Based Intelligent Access & Attendance System: Designed a secure, real-time tracking system using RFID technology
+for automated attendance logging and encrypted entry management.
+• Autonomous Navigation Suite (Gyro, Line, Human, & Obstacle): Developed a series of mobile robotic platforms including a 
+Gyro-controlled vehicle, Human-following bot, Line-follower, and Obstacle-avoidance system using ultrasonic and IR 
+sensor arrays.
+• Industrial Smart Color Classification System: An automated sorting system for manufacturing lines using high-speed color 
+sensors and logic-based actuation for quality control.
+• NTP-Server & RTC Based Smart Digital Clock: Fabricated a network-synchronized clock using an ESP8266, MAX7219
+display, and a custom 3D-modeled and printed chassis, ensuring millisecond accuracy via NTP protocols.
+• IoT Smart Waste Management (ThingSpeak): Developed a "Smart Dustbin" featuring ultrasonic fill-level monitoring and 
+air quality/dust sensors with real-time data visualization on the ThingSpeak cloud.
+• CanSat Weather Monitoring System: Designed and deployed a telemetry-based "CanSat" for atmospheric data acquisition, 
+focusing on real-time weather parameter transmission and analysis.
+• Digital AC Voltage & Frequency Instrumentation: A high-precision digital meter to monitor mains power quality, measuring 
+frequency and voltage fluctuations in real-time.
+• Robotic Arm IR-Control & Automation: Developed a multi-axis robotic arm with an IR-remote interface for manual 
+maneuvering and programmed sequence execution.
+• Interactive Welcoming Robot with ID Verification: A "talking" robot capable of vocal interaction and security-based entry 
+validation via ID card scanning.
+• Python-Based Geospatial Geocoding App: Created a Python application for automated geocoding to extract location data and 
+mapping coordinates from phone numbers.
+• ESP32-Based Air Mouse (HID): Developed a wearable Human Interface Device (HID) using an ESP32 and IMU sensor to 
+control PC cursor movement through spatial gestures.
+• Machine Learning Diabetes Predictive Model: Developed and trained a neural network using TensorFlow to perform clinical 
+data analysis and binary classification for diabetes risk assessment.
+• 45nm CMOS Full Adder Design (VLSI): Conducted high-level circuit analysis using Cadence Virtuoso to calculate and 
+optimize Delay, Power, Power-Delay Product (PDP), and Energy-Delay Product (EDP) for a 45nm technology-based Full 
+Adder.
+• Automated Fluid Management System: Implemented a sensor-driven water management system with automated 
+alarm triggers and pump control to prevent overflow and optimize usage.
+• Security-Enhanced Smart Door Lock: Designed a biometric or multi-feature digital lock system focusing on 
+advanced encryption and hardware-level security protocols .
+Skills Summary
+• Single Board Computer :                Raspberry Pi 4b
+• MicroControllers:                           Arduino Uno, Arduino Nano, Arduino Mega, ESP32, ESP8266, ESP32C3, 
+STM32, Raspberry Pi Pico, HT5023
+• Electrical Design: Altium Designer, EasyEDA, Cadence Virtuoso , Proteus , Quartus Prime , 
+Simulink , Orcad Pspice
+• Protocols: UART, SPI, I²C, USB (CDC), Bluetooth, Wi-Fi, Ethernet, GSM/GPRS (AT Commands), GPS (NMEA), 
+RS485, LoRa, MQTT, HTTP/HTTPS, TCP/IP
+• Software and tools: C+ +, Python, Verilog,  Git, Matlab and Simulink, Arduino IDE, Thonny IDE, 
+STM32 Cube IDE, Keil IDE, Visual Studio Code, PlatformIO, Micropython, OpenCV, Mediapipe, Numpy, 
+Tensorflow, YOLO model, DeepSORT, Android Studio, MIT App Inventor Computer Networking etc.
+• Hardware and tools: Environmental & motion sensors (DHT11, BMP180, BMP280, MPU6050, 
+ADXL335, ADXL 345, GY BNO055, GP2Y0A21YK0F, GP2Y1010AU0F, HC-SR04 , KY-018 LDR, KY-026 Flame 
+Sensor, TCRT5000 IR Sensor, TTP223 Touch Sensor, SW-420 Vibration Sensor, TCS230 TCS3200 Color Sensor, 
+MQ-4 Gas Sensors), positioning & navigation (NEO-6M GPS, NEO-7M GPS, EC11 Rotary Encoder), wireless & 
+communication modules (SX1278 LoRa, NRF24L01+, HC-05, HC-06, SIM808, SIM800L, SIM900A GSM/GPRS,
+SIM A7670C GSM Module, TSOP1738 IR Receiver, ASK Module 433Mhz, MNL80A PLC module,  FT232RL FTDI 
+USB-UART, ST link V2, USBasp,), motor control& actuation (28BYJ-48 Stepper, NEMA-17 Stepper, SG90 Servo, 
+MG996R Servo, BLDC Motors, ESC 30A, Industrial Servo, TB6600 Stepper Motor Driver, L293D, L298N, 
+TB6612FNG, BTS7960, Cytron MD10C, PCA9685), power & energy systems (DALY BMS, LM2596 Buck, 
+mini360 Buck converter,  MT3608 Boost, LDO Ics, ZMPT101B Voltage Sensor, ACS712 Current Sensor, PZEM-
+004T, PCF8574 IO Expander Module B6 Li-Po Charger, ), measurement & industrial sensors (YF-S201 Flow 
+Sensor, HX711 Load sensor, MAX30100 Pulse Sensor, FC-28 Water Level Sensor, FC-28 Soil Moisture Sensor, HC-
+SR501 PIR Motion Sensor), displays & HMI (TM1637 7-Segment, 16×2 LCD, SSD1306 OLED, MAX7219 Display 
+Driver, ST7789V drived SPI TFT LCD Display, 4×4 Matrix Keypad, KY-023 Joystick), storage & identification 
+(DS3231 RTC, MicroSD Card Module, MFRC522 RFID), vision control & advanced systems (ESP32-CAM 
+OV2640, Pixhawk PX4 2.4.8 Flight Controller, FlySky FS-i6X Remote, PAM8610 Audio Amplifier).
+• CAD Software: SolidWorks , AutoCad.
+• Documentation tools : Microsoft Office Suite (Word, Excel, PowerPoint)
+Honors and Awards
+• Received Invitation Letter to participate in Cozmoclench, TechFest IIT Bombay – 2022
+• Srijonshil Medha Onneshon (2nd position in Rajshahi Devision, High School, Class-09, 2016)
+Extracurricular activities
+• Played soccer in club.
+• Playing Football.
+References
+• Mr. Muhammad Jakaria Rahimi 
+Associate Professor (Dept. of EEE)
+Ahsanullah University of Science and Technology (AUST) 
+E-mail: mjrahimi.eee@aust.edu
