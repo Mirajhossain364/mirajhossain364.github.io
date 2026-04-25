@@ -84,9 +84,20 @@ export const DATA = {
   // -- COMPREHENSIVE EXPERIENCE --
   experience: [
     {
+      title: "Embedded System Engineer",
+      company: "Frontier Semiconductor",
+      link: "https://frontiersemi.com/center/home.php",
+      date: "May 2026 - Present",
+      points: [
+        "Engineering robust embedded systems and hardware-software architectures for advanced semiconductor metrology equipment.",
+        "Contributing to product research and development to ensure high precision and performance."
+      ]
+    },
+    {
       title: "Embedded System Engineer – RND Intern",
       company: "Cybernetics Hi-Tech Solution (Pvt.) Ltd.",
-      date: "Feb 2024 - Present",
+      link: "https://cyberneticsbd.com/",
+      date: "Feb 2026 - April 2026",
       points: [
         "Responsible for verifying technical decisions made by team members, ensuring accurate implementation and compliance with industry standards.",
         "Contributing to the design and development of Autonomous Guided Vehicles (AGVs) for agricultural and factory applications, optimizing hardware and software performance.",

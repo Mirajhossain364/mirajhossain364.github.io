@@ -179,13 +179,14 @@ const App = () => {
         style={{ scaleX }}
       />
 
-      {/* Background Animated Blobs */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0 flex items-center justify-center">
-        <div className="absolute top-[-20%] left-[-10%] w-[700px] h-[700px] rounded-full bg-primary/30 blur-[150px] mix-blend-screen dark:mix-blend-screen animate-blob opacity-70 dark:opacity-100"></div>
-        <div className="absolute top-[10%] right-[-10%] w-[600px] h-[600px] rounded-full bg-secondary/30 blur-[150px] mix-blend-screen dark:mix-blend-screen animate-blob opacity-70 dark:opacity-100" style={{ animationDelay: '4s' }}></div>
-        <div className="absolute bottom-[-20%] left-[10%] w-[800px] h-[800px] rounded-full bg-accent/20 blur-[150px] mix-blend-screen dark:mix-blend-screen animate-blob opacity-70 dark:opacity-100" style={{ animationDelay: '8s' }}></div>
-        {/* Subtle decorative grid */}
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz48L3N2Zz4=')] [mask-image:linear-gradient(to_bottom,white,transparent,white)] dark:opacity-50 opacity-20 z-0 pointer-events-none"></div>
+      {/* Sleek Professional Background */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute inset-0 bg-slate-50 dark:bg-[#040211]"></div>
+        {/* Very subtle elegant glow */}
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-slate-300/20 dark:bg-white/[0.02] rounded-full blur-[120px] opacity-50"></div>
+        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-slate-300/20 dark:bg-white/[0.02] rounded-full blur-[120px] opacity-50"></div>
+        {/* Minimalist dot grid */}
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMTQ4LDE2MywxODQsMC4wNSkiLz48L3N2Zz4=')] dark:bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wMykiLz48L3N2Zz4=')] [mask-image:linear-gradient(to_bottom,white,transparent,white)] z-0 pointer-events-none"></div>
       </div>
 
       {/* Navigation */}
@@ -249,83 +250,73 @@ const App = () => {
         {/* HERO SECTION */}
         <section id="home" className="min-h-screen flex flex-col md:flex-row justify-center items-center pt-20 gap-12 lg:gap-24">
           <div className="flex-1 max-w-2xl">
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="font-mono text-primary mb-5 font-semibold text-lg"
-            >
-              Hi, my name is
-            </motion.p>
             <motion.h1 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="text-5xl sm:text-7xl md:text-8xl lg:text-[7rem] font-black text-slate-900 dark:text-white tracking-tighter mb-4 leading-none"
+              className="text-5xl sm:text-6xl md:text-7xl lg:text-[6.5rem] font-black text-slate-900 dark:text-white tracking-tighter mb-4 leading-none"
             >
-              {DATA.name.split(' ')[0]} <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent drop-shadow-xl">{DATA.name.split(' ')[1]}</span>
+              {DATA.name}
             </motion.h1>
-            <motion.h2 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-600 dark:text-slate-400 mb-6 max-w-3xl leading-tight tracking-tight"
-            >
-              Architecting <span className="text-slate-900 dark:text-white">intelligent embedded systems</span> and <span className="text-slate-900 dark:text-white">robotics</span>.
-            </motion.h2>
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="max-w-2xl text-lg text-slate-600 dark:text-slate-400 mb-10 leading-relaxed"
-            >
-              {DATA.title} specializing in bridging the gap between hardware and software, bringing embedded intelligence to life.
-            </motion.p>
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
+              transition={{ delay: 0.3 }}
+              className="mb-10 flex flex-col gap-2"
+            >
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold text-slate-700 dark:text-slate-300 tracking-tight">
+                Embedded System Engineer
+              </h2>
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-medium text-slate-500 dark:text-slate-400 flex items-center gap-2">
+                <span className="text-primary font-bold">@</span> Frontier Semiconductor
+              </h3>
+            </motion.div>
+            
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
               className="flex flex-wrap gap-4"
             >
-              <button onClick={() => scrollTo('projects')} className="relative px-8 py-4 font-mono font-medium group overflow-hidden rounded-md border border-primary/50 text-slate-900 dark:text-white hover:border-primary transition-colors hover:text-primary dark:hover:text-white">
-                <span className="absolute inset-0 w-full h-full bg-primary/5 dark:bg-primary/10 group-hover:bg-primary/10 dark:group-hover:bg-primary/20 transition-all duration-300"></span>
-                <span className="relative flex items-center gap-2">Explore Projects <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" /></span>
+              <button onClick={() => scrollTo('projects')} className="bg-primary hover:bg-primary/90 text-white px-8 py-4 rounded-lg font-semibold flex items-center gap-2 transition-all shadow-[0_4px_14px_0_rgba(139,92,246,0.39)] hover:shadow-[0_6px_20px_rgba(139,92,246,0.23)] hover:-translate-y-0.5">
+                Explore Projects <ChevronRight className="w-4 h-4" />
               </button>
-              <a href={`mailto:${DATA.email}`} className="flex items-center gap-2 px-8 py-4 font-mono text-slate-600 dark:text-slate-300 hover:text-primary transition-colors font-medium">
+              <a href={`mailto:${DATA.email}`} className="px-8 py-4 rounded-lg font-semibold border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all flex items-center gap-2 shadow-sm hover:shadow-md hover:-translate-y-0.5">
                 <Mail className="w-4 h-4" /> Let's Talk
               </a>
+            </motion.div>
+
+            {/* Mobile Socials */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              className="flex md:hidden items-center justify-center w-full gap-6 mt-10 mb-4"
+            >
+              <a href={DATA.socials.github} target="_blank" rel="noopener noreferrer" className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors p-3 bg-slate-100 dark:bg-white/5 rounded-full shadow-sm"><Github className="w-5 h-5" /></a>
+              <a href={DATA.socials.linkedin} target="_blank" rel="noopener noreferrer" className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors p-3 bg-slate-100 dark:bg-white/5 rounded-full shadow-sm"><Linkedin className="w-5 h-5" /></a>
+              <a href={DATA.socials.youtube} target="_blank" rel="noopener noreferrer" className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors p-3 bg-slate-100 dark:bg-white/5 rounded-full shadow-sm"><Youtube className="w-5 h-5" /></a>
             </motion.div>
           </div>
           
           <motion.div 
-            initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
-            animate={{ opacity: 1, scale: 1, rotate: 0 }}
-            transition={{ delay: 0.6, duration: 1.2, type: "spring", bounce: 0.4 }}
-            className="flex-shrink-0 relative group"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.5, duration: 0.8, ease: "easeOut" }}
+            className="flex-shrink-0 relative group mt-8 md:mt-0"
           >
-            <div className="absolute inset-0 bg-gradient-to-tr from-primary via-secondary to-accent rounded-3xl md:rounded-[2.5rem] blur-2xl opacity-50 group-hover:opacity-80 transition-opacity duration-700 animate-pulse"></div>
-            <div className="relative w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 rounded-3xl md:rounded-[2.5rem] overflow-hidden border border-white/20 dark:border-white/10 z-10 bg-slate-200 dark:bg-slate-800 shadow-2xl transition-all duration-700 group-hover:-translate-y-4 group-hover:rotate-2 group-hover:scale-[1.02]">
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent z-10"></div>
+            {/* Subtle vibrant glow */}
+            <div className="absolute inset-0 bg-primary/20 dark:bg-primary/30 blur-[60px] rounded-full scale-110 opacity-50 group-hover:opacity-80 transition-opacity duration-700 pointer-events-none z-0"></div>
+            <div className="relative w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 rounded-full overflow-hidden border-[6px] border-white dark:border-[#0f172a] shadow-2xl z-10 bg-slate-100 dark:bg-slate-900 transition-transform duration-500 group-hover:scale-[1.03]">
               <img 
                 src="/profile.jpeg" 
                 alt={DATA.name}
-                className="w-full h-full object-cover mix-blend-normal relative z-0 transition-transform duration-700 group-hover:scale-110"
+                className="w-full h-full object-cover mix-blend-normal transition-transform duration-700 group-hover:scale-105"
                 onError={(e) => { 
                   e.target.onerror = null; 
                   e.target.src = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?fit=crop&w=400&h=400"; // Fallback placeholder
                 }}
               />
-            </div>
-            {/* Spinning ring decorative */}
-            <div className="absolute -inset-4 border border-slate-300 dark:border-white/[0.05] rounded-3xl md:rounded-[3rem] z-0 hidden md:block animate-spin-slow pointer-events-none border-dashed duration-700 transition-opacity opacity-0 group-hover:opacity-100"></div>
-            {/* Decorative dots grid behind */}
-            <div className="absolute -bottom-8 -left-8 z-0 hidden md:block opacity-30 dark:opacity-50 transition-transform duration-700 group-hover:-translate-x-2 group-hover:translate-y-2">
-              <svg width="100" height="100" fill="none" viewBox="0 0 100 100">
-                <pattern id="dots" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
-                  <circle cx="2" cy="2" r="2" className="fill-primary"></circle>
-                </pattern>
-                <rect width="100" height="100" fill="url(#dots)"></rect>
-              </svg>
             </div>
           </motion.div>
         </section>
@@ -429,7 +420,15 @@ const App = () => {
                   <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
                     <div>
                       <h3 className="text-2xl font-bold text-slate-900 dark:text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-primary group-hover:to-secondary transition-all duration-300">{exp.title}</h3>
-                      <h4 className="text-slate-600 dark:text-slate-400 text-lg mt-1 font-medium">{exp.company}</h4>
+                      <h4 className="text-slate-600 dark:text-slate-400 text-lg mt-1 font-medium">
+                        {exp.link ? (
+                          <a href={exp.link} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors inline-flex items-center gap-2">
+                            {exp.company} <ExternalLink className="w-4 h-4" />
+                          </a>
+                        ) : (
+                          exp.company
+                        )}
+                      </h4>
                     </div>
                     <span className="font-mono text-sm text-primary bg-primary/10 border border-primary/20 px-4 py-1.5 rounded-full whitespace-nowrap self-start md:self-auto font-medium shadow-sm">{exp.date}</span>
                   </div>
