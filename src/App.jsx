@@ -17,7 +17,11 @@ import {
   Sun,
   Award,
   Briefcase,
-  Users
+  Users,
+  MoreHorizontal,
+  Copy,
+  Check,
+  X
 } from 'lucide-react';
 
 import { DATA } from './data';
@@ -101,6 +105,234 @@ const SkillCard = ({ skillGroup }) => {
   );
 };
 
+// --- MOBILE MORE MENU ---
+const MobileMoreMenu = ({ scrollTo, activeSection }) => {
+  const [open, setOpen] = useState(false);
+
+  const items = [
+    { label: 'Home', target: 'home', num: '00' },
+    { label: 'About', target: 'about', num: '01' },
+    { label: 'Experience', target: 'experience', num: '02' },
+    { label: 'Projects', target: 'projects', num: '03' },
+    { label: 'Contact', target: 'contact', num: '04' },
+  ];
+
+  const handleClick = (target) => {
+    setOpen(false);
+    setTimeout(() => scrollTo(target), 100);
+  };
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setOpen(!open)}
+        className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-white/10 transition-colors"
+        aria-label="More menu"
+      >
+        {open ? <X className="w-5 h-5" /> : <MoreHorizontal className="w-5 h-5" />}
+      </button>
+
+      {open && (
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+          <motion.div
+            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+            transition={{ duration: 0.15 }}
+            className="absolute right-0 top-full mt-2 z-50 w-56 bg-white dark:bg-[#0a0820] border border-slate-200 dark:border-white/10 rounded-xl p-2 shadow-2xl"
+          >
+            {items.map((item) => (
+              <button
+                key={item.target}
+                onClick={() => handleClick(item.target)}
+                className={`w-full text-left flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 transition-colors font-mono text-sm ${
+                  activeSection === item.target
+                    ? 'text-primary'
+                    : 'text-slate-700 dark:text-slate-300'
+                }`}
+              >
+                <span>{item.label}</span>
+                <span className="text-xs opacity-60">{item.num}</span>
+              </button>
+            ))}
+          </motion.div>
+        </>
+      )}
+    </div>
+  );
+};
+
+// --- PROJECTS MODAL ---
+const ProjectsModal = ({ open, onClose }) => {
+  const [filter, setFilter] = useState('All');
+
+  // Collect unique tags
+  const allTags = ['All', ...new Set(DATA.projects.flatMap(p => p.tags))];
+  const filtered = filter === 'All'
+    ? DATA.projects
+    : DATA.projects.filter(p => p.tags.includes(filter));
+
+  if (!open) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-6"
+    >
+      <div
+        className="absolute inset-0 bg-slate-900/80 dark:bg-black/85 backdrop-blur-md"
+        onClick={onClose}
+      />
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.25 }}
+        className="relative w-full max-w-5xl max-h-[90vh] bg-white dark:bg-[#0a0820] rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+      >
+        <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-white/10">
+          <div>
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">All Projects</h3>
+            <p className="text-sm text-slate-500 font-mono mt-1">{filtered.length} project{filtered.length !== 1 ? 's' : ''} shown</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
+            aria-label="Close"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Filter chips */}
+        <div className="px-6 py-4 border-b border-slate-200 dark:border-white/10 overflow-x-auto">
+          <div className="flex gap-2 min-w-min">
+            {allTags.map(tag => (
+              <button
+                key={tag}
+                onClick={() => setFilter(tag)}
+                className={`px-3 py-1.5 rounded-full text-xs font-mono whitespace-nowrap transition-all ${
+                  filter === tag
+                    ? 'bg-primary text-white shadow-md'
+                    : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
+                }`}
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="overflow-y-auto p-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filtered.map((project, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.03 }}
+                className="glass-card p-5 rounded-xl flex flex-col h-full"
+              >
+                <h4 className="text-base font-bold text-slate-900 dark:text-white mb-2 leading-tight">{project.title}</h4>
+                <p className="text-slate-600 dark:text-slate-400 text-xs leading-relaxed flex-grow mb-4">{project.description}</p>
+                <ul className="flex flex-wrap gap-1 mt-auto">
+                  {project.tags.map((tag, j) => (
+                    <li key={j} className="font-mono text-[10px] bg-slate-100 dark:bg-white/[0.05] text-slate-700 dark:text-slate-300 px-2 py-0.5 rounded-sm border border-slate-200 dark:border-white/[0.05]">
+                      {tag}
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            ))}
+          </div>
+          {filtered.length === 0 && (
+            <p className="text-center text-slate-500 py-12">No projects match this filter.</p>
+          )}
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+};
+
+// --- CONTACT BUTTON (with Gmail web fallback) ---
+const ContactButton = ({ className = "", children, icon }) => {
+  const [open, setOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const email = DATA.email;
+  const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${email}`;
+  const mailtoUrl = `mailto:${email}`;
+
+  const copyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(email);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (e) {
+      // ignore
+    }
+  };
+
+  return (
+    <div className="relative inline-block">
+      <button
+        onClick={() => setOpen(!open)}
+        className={className}
+      >
+        {icon}
+        {children}
+      </button>
+
+      {open && (
+        <>
+          <div className="fixed inset-0 z-40 cursor-pointer" onClick={() => setOpen(false)} />
+          <motion.div
+            initial={{ opacity: 0, y: -8, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            className="absolute left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:right-0 top-full mt-2 z-50 w-64 bg-white dark:bg-[#0a0820] border border-slate-200 dark:border-white/10 rounded-xl p-2 shadow-2xl text-left"
+          >
+            <a
+              href={gmailUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 transition-colors text-sm"
+            >
+              <Mail className="w-4 h-4 text-primary" />
+              <div className="flex flex-col">
+                <span className="font-medium text-slate-900 dark:text-white">Open in Gmail</span>
+                <span className="text-xs text-slate-500">Web app — works everywhere</span>
+              </div>
+            </a>
+            <a
+              href={mailtoUrl}
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 transition-colors text-sm"
+            >
+              <Mail className="w-4 h-4 text-secondary" />
+              <div className="flex flex-col">
+                <span className="font-medium text-slate-900 dark:text-white">Default Mail App</span>
+                <span className="text-xs text-slate-500">Opens your setup mail client</span>
+              </div>
+            </a>
+            <button
+              onClick={copyEmail}
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 transition-colors text-sm"
+            >
+              {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4 text-accent" />}
+              <div className="flex flex-col items-start">
+                <span className="font-medium text-slate-900 dark:text-white">{copied ? 'Copied!' : 'Copy Email'}</span>
+                <span className="text-xs text-slate-500">{email}</span>
+              </div>
+            </button>
+          </motion.div>
+        </>
+      )}
+    </div>
+  );
+};
+
 const SectionHeading = ({ children, number }) => (
   <motion.div 
     initial="hidden"
@@ -117,11 +349,43 @@ const SectionHeading = ({ children, number }) => (
   </motion.div>
 );
 
+const PhoneContact = ({ phone }) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleClick = (e) => {
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    if (isMobile) {
+      return;
+    } else {
+      e.preventDefault();
+      navigator.clipboard.writeText(phone).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      });
+    }
+  };
+
+  return (
+    <a 
+      href={`tel:${phone.replace(/[^0-9+]/g, '')}`}
+      onClick={handleClick}
+      className="flex items-center gap-2 hover:text-primary transition-colors cursor-pointer relative group"
+    >
+      <Phone className="w-4 h-4" /> 
+      {copied ? "Copied!" : phone}
+      <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 dark:bg-white text-white dark:text-black font-semibold text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity hidden md:block pointer-events-none whitespace-nowrap shadow-md">
+        {copied ? "Copied!" : "Click to copy"}
+      </span>
+    </a>
+  );
+};
+
 // --- MAIN APP COMPONENT ---
 const App = () => {
   const [activeSection, setActiveSection] = useState('home');
   const [isScrolled, setIsScrolled] = useState(false);
   const [theme, setTheme] = useState('dark');
+  const [projectsModalOpen, setProjectsModalOpen] = useState(false);
 
   // Handle Theme switching
   useEffect(() => {
@@ -227,7 +491,21 @@ const App = () => {
               {theme === 'dark' ? <Sun className="w-5 h-5 text-amber-300" /> : <Moon className="w-5 h-5 text-slate-700" />}
             </motion.button>
 
+          </div>
 
+          {/* Mobile: 3-dot More menu */}
+          <div className="md:hidden flex items-center gap-2 z-50">
+            <motion.button
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.4 }}
+              onClick={toggleTheme}
+              className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-white/10 transition-colors"
+              aria-label="Toggle Theme"
+            >
+              {theme === 'dark' ? <Sun className="w-5 h-5 text-amber-300" /> : <Moon className="w-5 h-5 text-slate-700" />}
+            </motion.button>
+            <MobileMoreMenu scrollTo={scrollTo} activeSection={activeSection} />
           </div>
         </div>
       </nav>
@@ -245,7 +523,7 @@ const App = () => {
       </motion.div>
 
       {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-6 sm:px-12 md:px-24 relative z-10">
+      <main className="max-w-6xl mx-auto px-6 sm:px-12 md:px-24 relative z-20">
         
         {/* HERO SECTION */}
         <section id="home" className="min-h-screen flex flex-col md:flex-row justify-center items-center pt-20 gap-12 lg:gap-24">
@@ -281,9 +559,12 @@ const App = () => {
               <button onClick={() => scrollTo('projects')} className="bg-primary hover:bg-primary/90 text-white px-8 py-4 rounded-lg font-semibold flex items-center gap-2 transition-all shadow-[0_4px_14px_0_rgba(139,92,246,0.39)] hover:shadow-[0_6px_20px_rgba(139,92,246,0.23)] hover:-translate-y-0.5">
                 Explore Projects <ChevronRight className="w-4 h-4" />
               </button>
-              <a href={`mailto:${DATA.email}`} className="px-8 py-4 rounded-lg font-semibold border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all flex items-center gap-2 shadow-sm hover:shadow-md hover:-translate-y-0.5">
-                <Mail className="w-4 h-4" /> Let's Talk
-              </a>
+              <ContactButton
+                className="relative px-8 py-4 rounded-lg font-semibold border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all flex items-center gap-2 shadow-sm hover:shadow-md hover:-translate-y-0.5"
+                icon={<Mail className="w-4 h-4" />}
+              >
+                Let's Talk
+              </ContactButton>
             </motion.div>
 
             {/* Mobile Socials */}
@@ -321,7 +602,7 @@ const App = () => {
           </motion.div>
         </section>
 
-        <section id="about" className="py-24">
+        <section id="about" className="py-20">
           <SectionHeading number="1">About Me</SectionHeading>
           <motion.div 
             initial="hidden"
@@ -344,7 +625,7 @@ const App = () => {
                   <div key={i} className="glass-card p-6 rounded-xl relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-bl-full blur-[20px] transition-all group-hover:bg-primary/20"></div>
                     <h4 className="text-slate-900 dark:text-white font-bold text-lg">{edu.degree}</h4>
-                    <p className="font-mono text-secondary text-sm mb-2 mt-1 underline decoration-primary/30 underline-offset-4 line-clamp-1">{edu.institution} &middot; {edu.date}</p>
+                    <p className="font-mono text-secondary text-sm mb-2 mt-1 underline decoration-primary/30 underline-offset-4 leading-relaxed">{edu.institution} &middot; {edu.date}</p>
                     {edu.details && <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{edu.details}</p>}
                   </div>
                 ))}
@@ -400,84 +681,116 @@ const App = () => {
         </section>
 
         {/* EXPERIENCE SECTION */}
-        <section id="experience" className="py-32 relative">
+        <section id="experience" className="py-20 relative">
           <div className="absolute left-[39px] md:left-[51px] top-40 bottom-0 w-px bg-gradient-to-b from-primary/50 via-secondary/20 to-transparent hidden sm:block"></div>
           <SectionHeading number="2">Experience</SectionHeading>
-          <motion.div 
+          <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-50px" }}
             variants={staggerContainer}
-            className="space-y-12 max-w-4xl relative"
+            className="space-y-6 max-w-4xl relative"
           >
-            {DATA.experience.map((exp, i) => (
-              <motion.div key={i} variants={fadeInUp} className="relative pl-0 sm:pl-12 md:pl-16 group">
-                <div className="hidden sm:flex absolute left-0 top-8 w-8 h-8 rounded-full bg-slate-100 dark:bg-[#040211] border-4 border-slate-200 dark:border-white/10 items-center justify-center z-10 group-hover:border-primary group-hover:scale-110 transition-all duration-500 shadow-xl group-hover:shadow-[0_0_20px_rgba(139,92,246,0.4)]">
-                  <div className="w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-600 group-hover:bg-primary transition-colors duration-500"></div>
-                </div>
-                <div className="glass-card p-8 md:p-10 rounded-3xl relative group border-t-4 border-t-transparent hover:border-t-primary transition-all duration-500 hover:-translate-y-2">
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl pointer-events-none"></div>
-                  <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
-                    <div>
-                      <h3 className="text-2xl font-bold text-slate-900 dark:text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-primary group-hover:to-secondary transition-all duration-300">{exp.title}</h3>
-                      <h4 className="text-slate-600 dark:text-slate-400 text-lg mt-1 font-medium">
-                        {exp.link ? (
-                          <a href={exp.link} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors inline-flex items-center gap-2">
-                            {exp.company} <ExternalLink className="w-4 h-4" />
-                          </a>
-                        ) : (
-                          exp.company
-                        )}
-                      </h4>
-                    </div>
-                    <span className="font-mono text-sm text-primary bg-primary/10 border border-primary/20 px-4 py-1.5 rounded-full whitespace-nowrap self-start md:self-auto font-medium shadow-sm">{exp.date}</span>
+            {DATA.experience.map((exp, i) => {
+              const isCurrent = i === 0;
+              return (
+                <motion.div key={i} variants={fadeInUp} className="relative pl-0 sm:pl-12 md:pl-16 group">
+                  <div className="hidden sm:flex absolute left-0 top-8 w-8 h-8 rounded-full bg-slate-100 dark:bg-[#040211] border-4 border-slate-200 dark:border-white/10 items-center justify-center z-10 group-hover:border-primary group-hover:scale-110 transition-all duration-500 shadow-xl group-hover:shadow-[0_0_20px_rgba(139,92,246,0.4)]">
+                    <div className={`w-2 h-2 rounded-full transition-colors duration-500 ${isCurrent ? 'bg-primary animate-pulse' : 'bg-slate-300 dark:bg-slate-600 group-hover:bg-primary'}`}></div>
                   </div>
-                  <ul className="space-y-4">
-                    {exp.points.map((point, j) => (
-                      <li key={j} className="flex items-start gap-4 text-slate-600 dark:text-slate-400 group/item">
-                        <ChevronRight className="w-5 h-5 text-primary/50 shrink-0 mt-0.5 group-hover/item:text-primary group-hover/item:translate-x-1 transition-all" />
-                        <span className="leading-relaxed">{point}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </motion.div>
-            ))}
+                  <details className="glass-card rounded-3xl relative group border-t-4 border-t-transparent hover:border-t-primary transition-all duration-500 hover:-translate-y-1" open={isCurrent}>
+                    <summary className="list-none cursor-pointer p-6 md:p-8 select-none">
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 flex-wrap mb-1">
+                            <h3 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-primary group-hover:to-secondary transition-all duration-300">
+                              {exp.title}
+                            </h3>
+                            {isCurrent && (
+                              <span className="font-mono text-[10px] text-green-600 dark:text-green-400 bg-green-500/10 border border-green-500/20 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                                Current
+                              </span>
+                            )}
+                          </div>
+                          <h4 className="text-slate-600 dark:text-slate-400 text-base md:text-lg font-medium">
+                            {exp.link ? (
+                              <a href={exp.link} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors inline-flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                                {exp.company} <ExternalLink className="w-4 h-4" />
+                              </a>
+                            ) : (
+                              exp.company
+                            )}
+                          </h4>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="font-mono text-xs md:text-sm text-primary bg-primary/10 border border-primary/20 px-3 py-1 md:px-4 md:py-1.5 rounded-full whitespace-nowrap font-medium shadow-sm">{exp.date}</span>
+                          <ChevronRight className="w-5 h-5 text-slate-400 transition-transform group-open:rotate-90" />
+                        </div>
+                      </div>
+                    </summary>
+                    <div className="px-6 md:px-8 pb-6 md:pb-8 pt-2 border-t border-slate-200 dark:border-white/5">
+                      <ul className="space-y-3">
+                        {exp.points.map((point, j) => (
+                          <li key={j} className="flex items-start gap-4 text-slate-600 dark:text-slate-400 group/item">
+                            <ChevronRight className="w-5 h-5 text-primary/50 shrink-0 mt-0.5 group-hover/item:text-primary group-hover/item:translate-x-1 transition-all" />
+                            <span className="leading-relaxed text-sm md:text-base">{point}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </details>
+                </motion.div>
+              );
+            })}
           </motion.div>
         </section>
 
         {/* EXTENSIVE PROJECTS SECTION */}
-        <section id="projects" className="py-32">
+        <section id="projects" className="py-20">
           <SectionHeading number="3">Technical Portfolio</SectionHeading>
-          <motion.div 
+          <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "100px" }}
             variants={staggerContainer}
             className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5"
           >
-            {DATA.projects.map((project, i) => (
+            {DATA.projects.slice(0, 6).map((project, i) => (
               <motion.div key={i} variants={fadeInUp} className="glass-card p-6 rounded-2xl flex flex-col h-full group relative overflow-hidden pointer-events-auto">
-                {/* Glow behind card on hover */}
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 rounded-2xl pointer-events-none"></div>
-                
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors mb-3 pr-8 leading-tight">{project.title}</h3>
                 <p className="text-slate-600 dark:text-slate-400 text-xs sm:text-sm mb-6 flex-grow leading-relaxed">{project.description}</p>
-                
                 <ul className="flex flex-wrap gap-1.5 mt-auto">
-                  {project.tags.map((tag, j) => (
+                  {project.tags.slice(0, 4).map((tag, j) => (
                     <li key={j} className="font-mono text-[10px] bg-slate-100 dark:bg-white/[0.05] text-slate-700 dark:text-slate-300 px-2 py-1 rounded-sm border border-slate-200 dark:border-white/[0.05]">{tag}</li>
                   ))}
                 </ul>
               </motion.div>
             ))}
           </motion.div>
+
+          {DATA.projects.length > 6 && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="flex justify-center mt-12"
+            >
+              <button
+                onClick={() => setProjectsModalOpen(true)}
+                className="group inline-flex items-center gap-2 px-8 py-3 rounded-full border border-slate-300 dark:border-white/10 bg-white/50 dark:bg-white/[0.03] hover:bg-primary hover:border-primary hover:text-white text-slate-700 dark:text-slate-300 font-mono text-sm transition-all duration-300 hover:-translate-y-0.5 shadow-sm hover:shadow-lg"
+              >
+                View All {DATA.projects.length} Projects
+                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </button>
+            </motion.div>
+          )}
         </section>
 
 
 
         {/* CONTACT SECTION */}
-        <section id="contact" className="py-40 flex flex-col items-center justify-center text-center relative">
+        <section id="contact" className="pt-28 pb-48 flex flex-col items-center justify-center text-center relative z-20">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -493,20 +806,18 @@ const App = () => {
               <div className="flex items-center gap-2 hover:text-primary transition-colors">
                 <Mail className="w-4 h-4" /> {DATA.email}
               </div>
-              <div className="flex items-center gap-2 hover:text-primary transition-colors">
-                <Phone className="w-4 h-4" /> {DATA.phone}
-              </div>
+              <PhoneContact phone={DATA.phone} />
               <div className="flex items-center gap-2 hover:text-primary transition-colors">
                 <Terminal className="w-4 h-4" /> {DATA.location}
               </div>
             </div>
 
-            <a 
-              href={`mailto:${DATA.email}`} 
-              className="inline-flex items-center gap-3 bg-slate-900 dark:bg-white text-white dark:text-black font-bold px-10 py-5 rounded-full hover:bg-primary dark:hover:bg-primary hover:text-white dark:hover:text-white transition-all duration-300 hover:scale-105 shadow-[0_0_20px_rgba(139,92,246,0.15)] dark:shadow-[0_0_40px_rgba(139,92,246,0.3)]"
+            <ContactButton
+              className="relative inline-flex items-center gap-3 bg-slate-900 dark:bg-white text-white dark:text-black font-bold px-10 py-5 rounded-full hover:bg-primary dark:hover:bg-primary hover:text-white dark:hover:text-white transition-all duration-300 hover:scale-105 shadow-[0_0_20px_rgba(139,92,246,0.15)] dark:shadow-[0_0_40px_rgba(139,92,246,0.3)]"
+              icon={<Mail className="w-5 h-5" />}
             >
-              <Mail className="w-5 h-5" /> Let's Talk
-            </a>
+              Let's Talk
+            </ContactButton>
           </div>
         </section>
       </main>
@@ -515,6 +826,9 @@ const App = () => {
       <footer className="py-8 text-center font-mono text-sm text-slate-500 border-t border-slate-200 dark:border-white/[0.05] relative z-10 w-full transition-colors duration-500">
         <p className="hover:text-primary transition-colors mb-2 cursor-pointer">Copyright Miraz Hossain 2026</p>
       </footer>
+
+      {/* ALL PROJECTS MODAL */}
+      <ProjectsModal open={projectsModalOpen} onClose={() => setProjectsModalOpen(false)} />
     </div>
   );
 };
