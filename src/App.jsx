@@ -110,11 +110,11 @@ const MobileMoreMenu = ({ scrollTo, activeSection }) => {
   const [open, setOpen] = useState(false);
 
   const items = [
-    { label: 'Home', target: 'home', num: '00' },
-    { label: 'About', target: 'about', num: '01' },
-    { label: 'Experience', target: 'experience', num: '02' },
-    { label: 'Projects', target: 'projects', num: '03' },
-    { label: 'Contact', target: 'contact', num: '04' },
+    { label: 'Home', target: 'home' },
+    { label: 'About', target: 'about' },
+    { label: 'Experience', target: 'experience' },
+    { label: 'Projects', target: 'projects' },
+    { label: 'Contact', target: 'contact' },
   ];
 
   const handleClick = (target) => {
@@ -148,12 +148,11 @@ const MobileMoreMenu = ({ scrollTo, activeSection }) => {
                 onClick={() => handleClick(item.target)}
                 className={`w-full text-left flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 transition-colors font-mono text-sm ${
                   activeSection === item.target
-                    ? 'text-primary'
+                    ? 'text-primary font-semibold'
                     : 'text-slate-700 dark:text-slate-300'
                 }`}
               >
                 <span>{item.label}</span>
-                <span className="text-xs opacity-60">{item.num}</span>
               </button>
             ))}
           </motion.div>
@@ -194,8 +193,8 @@ const ProjectsModal = ({ open, onClose }) => {
       >
         <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-white/10">
           <div>
-            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">All Projects</h3>
-            <p className="text-sm text-slate-500 font-mono mt-1">{filtered.length} project{filtered.length !== 1 ? 's' : ''} shown</p>
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">All Undergrad Projects</h3>
+            <p className="text-sm text-slate-500 font-mono mt-1">Curated academic & hands-on engineering projects</p>
           </div>
           <button
             onClick={onClose}
@@ -206,16 +205,16 @@ const ProjectsModal = ({ open, onClose }) => {
           </button>
         </div>
 
-        {/* Filter chips */}
-        <div className="px-6 py-4 border-b border-slate-200 dark:border-white/10 overflow-x-auto">
-          <div className="flex gap-2 min-w-min">
+        {/* Filter chips - sleek scrollable container without cropping */}
+        <div className="px-6 py-3.5 border-b border-slate-200 dark:border-white/10 overflow-x-auto no-scrollbar scroll-smooth">
+          <div className="flex gap-2 min-w-min items-center py-0.5">
             {allTags.map(tag => (
               <button
                 key={tag}
                 onClick={() => setFilter(tag)}
-                className={`px-3 py-1.5 rounded-full text-xs font-mono whitespace-nowrap transition-all ${
+                className={`px-3.5 py-1.5 rounded-full text-xs font-mono whitespace-nowrap shrink-0 transition-all ${
                   filter === tag
-                    ? 'bg-primary text-white shadow-md'
+                    ? 'bg-primary text-white shadow-md font-semibold'
                     : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
                 }`}
               >
@@ -333,7 +332,7 @@ const ContactButton = ({ className = "", children, icon }) => {
   );
 };
 
-const SectionHeading = ({ children, number }) => (
+const SectionHeading = ({ children }) => (
   <motion.div 
     initial="hidden"
     whileInView="visible"
@@ -342,7 +341,6 @@ const SectionHeading = ({ children, number }) => (
     className="flex items-center gap-4 mb-16"
   >
     <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 flex items-center tracking-tight">
-      <span className="font-mono text-primary text-xl md:text-2xl mr-3 font-normal">0{number}.</span>
       {children}
     </h2>
     <div className="h-px bg-slate-300 dark:bg-white/[0.1] flex-grow max-w-[200px] md:max-w-md"></div>
@@ -474,9 +472,9 @@ const App = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
                 onClick={() => scrollTo(item.toLowerCase())}
-                className={`nav-link flex items-center gap-1 ${activeSection === item.toLowerCase() ? 'active' : ''}`}
+                className={`nav-link flex items-center ${activeSection === item.toLowerCase() ? 'active font-semibold' : ''}`}
               >
-                <span className="text-primary">0{i+1}.</span> {item}
+                {item}
               </motion.button>
             ))}
             
@@ -603,7 +601,7 @@ const App = () => {
         </section>
 
         <section id="about" className="py-20">
-          <SectionHeading number="1">About Me</SectionHeading>
+          <SectionHeading>About Me</SectionHeading>
           <motion.div 
             initial="hidden"
             whileInView="visible"
@@ -682,72 +680,145 @@ const App = () => {
 
         {/* EXPERIENCE SECTION */}
         <section id="experience" className="py-20 relative">
-          <div className="absolute left-[39px] md:left-[51px] top-40 bottom-0 w-px bg-gradient-to-b from-primary/50 via-secondary/20 to-transparent hidden sm:block"></div>
-          <SectionHeading number="2">Experience</SectionHeading>
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-50px" }}
-            variants={staggerContainer}
-            className="space-y-6 max-w-4xl relative"
-          >
-            {DATA.experience.map((exp, i) => {
-              const isCurrent = i === 0;
-              return (
-                <motion.div key={i} variants={fadeInUp} className="relative pl-0 sm:pl-12 md:pl-16 group">
-                  <div className="hidden sm:flex absolute left-0 top-8 w-8 h-8 rounded-full bg-slate-100 dark:bg-[#040211] border-4 border-slate-200 dark:border-white/10 items-center justify-center z-10 group-hover:border-primary group-hover:scale-110 transition-all duration-500 shadow-xl group-hover:shadow-[0_0_20px_rgba(139,92,246,0.4)]">
-                    <div className={`w-2 h-2 rounded-full transition-colors duration-500 ${isCurrent ? 'bg-primary animate-pulse' : 'bg-slate-300 dark:bg-slate-600 group-hover:bg-primary'}`}></div>
-                  </div>
-                  <details className="glass-card rounded-3xl relative group border-t-4 border-t-transparent hover:border-t-primary transition-all duration-500 hover:-translate-y-1" open={isCurrent}>
-                    <summary className="list-none cursor-pointer p-6 md:p-8 select-none">
-                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 flex-wrap mb-1">
-                            <h3 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-primary group-hover:to-secondary transition-all duration-300">
+          <SectionHeading>Experience</SectionHeading>
+          
+          {/* Work Experience */}
+          <div className="mb-16 relative">
+            <div className="absolute left-[39px] md:left-[51px] top-14 bottom-0 w-px bg-gradient-to-b from-primary/50 via-primary/20 to-transparent hidden sm:block"></div>
+            <div className="flex items-center gap-3 text-slate-900 dark:text-white font-bold text-xl md:text-2xl mb-8">
+              <Briefcase className="text-primary w-6 h-6" />
+              <span>Work Experience</span>
+              <span className="font-mono text-xs font-normal text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 px-2.5 py-0.5 rounded-full ml-2 hidden sm:inline-block">Industry & Engineering</span>
+            </div>
+
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-50px" }}
+              variants={staggerContainer}
+              className="space-y-6 max-w-4xl relative"
+            >
+              {(DATA.workExperience || DATA.experience.slice(0, 2)).map((exp, i) => {
+                const isCurrent = i === 0;
+                return (
+                  <motion.div key={i} variants={fadeInUp} className="relative pl-0 sm:pl-12 md:pl-16 group">
+                    <div className="hidden sm:flex absolute left-0 top-8 w-8 h-8 rounded-full bg-slate-100 dark:bg-[#040211] border-4 border-slate-200 dark:border-white/10 items-center justify-center z-10 group-hover:border-primary group-hover:scale-110 transition-all duration-500 shadow-xl group-hover:shadow-[0_0_20px_rgba(139,92,246,0.4)]">
+                      <div className={`w-2 h-2 rounded-full transition-colors duration-500 ${isCurrent ? 'bg-primary animate-pulse' : 'bg-slate-300 dark:bg-slate-600 group-hover:bg-primary'}`}></div>
+                    </div>
+                    <details className="glass-card rounded-3xl relative group border-t-4 border-t-transparent hover:border-t-primary transition-all duration-500 hover:-translate-y-1" open={isCurrent}>
+                      <summary className="list-none cursor-pointer p-6 md:p-8 select-none">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 flex-wrap mb-1">
+                              <h3 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-primary group-hover:to-secondary transition-all duration-300">
+                                {exp.title}
+                              </h3>
+                              {isCurrent && (
+                                <span className="font-mono text-[10px] text-green-600 dark:text-green-400 bg-green-500/10 border border-green-500/20 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                                  Current
+                                </span>
+                              )}
+                            </div>
+                            <h4 className="text-slate-600 dark:text-slate-400 text-base md:text-lg font-medium">
+                              {exp.link ? (
+                                <a href={exp.link} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors inline-flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                                  {exp.company} <ExternalLink className="w-4 h-4" />
+                                </a>
+                              ) : (
+                                exp.company
+                              )}
+                            </h4>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <span className="font-mono text-xs md:text-sm text-primary bg-primary/10 border border-primary/20 px-3 py-1 md:px-4 md:py-1.5 rounded-full whitespace-nowrap font-medium shadow-sm">{exp.date}</span>
+                            <ChevronRight className="w-5 h-5 text-slate-400 transition-transform group-open:rotate-90" />
+                          </div>
+                        </div>
+                      </summary>
+                      <div className="px-6 md:px-8 pb-6 md:pb-8 pt-2 border-t border-slate-200 dark:border-white/5">
+                        <ul className="space-y-3">
+                          {exp.points.map((point, j) => (
+                            <li key={j} className="flex items-start gap-4 text-slate-600 dark:text-slate-400 group/item">
+                              <ChevronRight className="w-5 h-5 text-primary/50 shrink-0 mt-0.5 group-hover/item:text-primary group-hover/item:translate-x-1 transition-all" />
+                              <span className="leading-relaxed text-sm md:text-base">{point}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </details>
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+          </div>
+
+          {/* Management Experience (University Club Activities & Leadership) */}
+          <div className="relative">
+            <div className="absolute left-[39px] md:left-[51px] top-14 bottom-0 w-px bg-gradient-to-b from-secondary/50 via-secondary/20 to-transparent hidden sm:block"></div>
+            <div className="flex items-center gap-3 text-slate-900 dark:text-white font-bold text-xl md:text-2xl mb-8">
+              <Award className="text-secondary w-6 h-6" />
+              <span>Management Experience</span>
+              <span className="font-mono text-xs font-normal text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 px-2.5 py-0.5 rounded-full ml-2 hidden sm:inline-block">University Club Activities & Leadership</span>
+            </div>
+
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-50px" }}
+              variants={staggerContainer}
+              className="space-y-6 max-w-4xl relative"
+            >
+              {(DATA.managementExperience || DATA.experience.slice(2)).map((exp, i) => {
+                const isFirst = i === 0;
+                return (
+                  <motion.div key={i} variants={fadeInUp} className="relative pl-0 sm:pl-12 md:pl-16 group">
+                    <div className="hidden sm:flex absolute left-0 top-8 w-8 h-8 rounded-full bg-slate-100 dark:bg-[#040211] border-4 border-slate-200 dark:border-white/10 items-center justify-center z-10 group-hover:border-secondary group-hover:scale-110 transition-all duration-500 shadow-xl group-hover:shadow-[0_0_20px_rgba(59,130,246,0.4)]">
+                      <div className={`w-2 h-2 rounded-full transition-colors duration-500 ${isFirst ? 'bg-secondary animate-pulse' : 'bg-slate-300 dark:bg-slate-600 group-hover:bg-secondary'}`}></div>
+                    </div>
+                    <details className="glass-card rounded-3xl relative group border-t-4 border-t-transparent hover:border-t-secondary transition-all duration-500 hover:-translate-y-1" open={isFirst}>
+                      <summary className="list-none cursor-pointer p-6 md:p-8 select-none">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                          <div className="flex-1">
+                            <h3 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-secondary group-hover:to-accent transition-all duration-300 mb-1">
                               {exp.title}
                             </h3>
-                            {isCurrent && (
-                              <span className="font-mono text-[10px] text-green-600 dark:text-green-400 bg-green-500/10 border border-green-500/20 px-2 py-0.5 rounded-full uppercase tracking-wider">
-                                Current
-                              </span>
-                            )}
+                            <h4 className="text-slate-600 dark:text-slate-400 text-base md:text-lg font-medium">
+                              {exp.link ? (
+                                <a href={exp.link} target="_blank" rel="noopener noreferrer" className="hover:text-secondary transition-colors inline-flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                                  {exp.company} <ExternalLink className="w-4 h-4" />
+                                </a>
+                              ) : (
+                                exp.company
+                              )}
+                            </h4>
                           </div>
-                          <h4 className="text-slate-600 dark:text-slate-400 text-base md:text-lg font-medium">
-                            {exp.link ? (
-                              <a href={exp.link} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors inline-flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                                {exp.company} <ExternalLink className="w-4 h-4" />
-                              </a>
-                            ) : (
-                              exp.company
-                            )}
-                          </h4>
+                          <div className="flex items-center gap-3">
+                            <span className="font-mono text-xs md:text-sm text-secondary bg-secondary/10 border border-secondary/20 px-3 py-1 md:px-4 md:py-1.5 rounded-full whitespace-nowrap font-medium shadow-sm">{exp.date}</span>
+                            <ChevronRight className="w-5 h-5 text-slate-400 transition-transform group-open:rotate-90" />
+                          </div>
                         </div>
-                        <div className="flex items-center gap-3">
-                          <span className="font-mono text-xs md:text-sm text-primary bg-primary/10 border border-primary/20 px-3 py-1 md:px-4 md:py-1.5 rounded-full whitespace-nowrap font-medium shadow-sm">{exp.date}</span>
-                          <ChevronRight className="w-5 h-5 text-slate-400 transition-transform group-open:rotate-90" />
-                        </div>
+                      </summary>
+                      <div className="px-6 md:px-8 pb-6 md:pb-8 pt-2 border-t border-slate-200 dark:border-white/5">
+                        <ul className="space-y-3">
+                          {exp.points.map((point, j) => (
+                            <li key={j} className="flex items-start gap-4 text-slate-600 dark:text-slate-400 group/item">
+                              <ChevronRight className="w-5 h-5 text-secondary/50 shrink-0 mt-0.5 group-hover/item:text-secondary group-hover/item:translate-x-1 transition-all" />
+                              <span className="leading-relaxed text-sm md:text-base">{point}</span>
+                            </li>
+                          ))}
+                        </ul>
                       </div>
-                    </summary>
-                    <div className="px-6 md:px-8 pb-6 md:pb-8 pt-2 border-t border-slate-200 dark:border-white/5">
-                      <ul className="space-y-3">
-                        {exp.points.map((point, j) => (
-                          <li key={j} className="flex items-start gap-4 text-slate-600 dark:text-slate-400 group/item">
-                            <ChevronRight className="w-5 h-5 text-primary/50 shrink-0 mt-0.5 group-hover/item:text-primary group-hover/item:translate-x-1 transition-all" />
-                            <span className="leading-relaxed text-sm md:text-base">{point}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </details>
-                </motion.div>
-              );
-            })}
-          </motion.div>
+                    </details>
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+          </div>
         </section>
 
         {/* EXTENSIVE PROJECTS SECTION */}
         <section id="projects" className="py-20">
-          <SectionHeading number="3">Technical Portfolio</SectionHeading>
+          <SectionHeading>Undergrad Projects</SectionHeading>
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -780,7 +851,7 @@ const App = () => {
                 onClick={() => setProjectsModalOpen(true)}
                 className="group inline-flex items-center gap-2 px-8 py-3 rounded-full border border-slate-300 dark:border-white/10 bg-white/50 dark:bg-white/[0.03] hover:bg-primary hover:border-primary hover:text-white text-slate-700 dark:text-slate-300 font-mono text-sm transition-all duration-300 hover:-translate-y-0.5 shadow-sm hover:shadow-lg"
               >
-                View All {DATA.projects.length} Projects
+                View All Projects
                 <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </button>
             </motion.div>
@@ -800,7 +871,7 @@ const App = () => {
           ></motion.div>
           
           <div className="relative z-10 w-full max-w-2xl">
-            <p className="font-mono text-primary mb-6 font-medium">04. What's Next?</p>
+            <p className="font-mono text-primary mb-4 font-medium uppercase tracking-widest text-xs">What's Next?</p>
             <h2 className="text-5xl md:text-7xl font-black text-slate-900 dark:text-white mb-8 tracking-tight">Get In Touch</h2>
             <div className="flex flex-col gap-3 items-center mb-10 text-slate-600 dark:text-slate-400 font-mono text-sm">
               <div className="flex items-center gap-2 hover:text-primary transition-colors">

@@ -82,6 +82,65 @@ export const DATA = {
   ],
 
   // -- COMPREHENSIVE EXPERIENCE --
+  // -- PROFESSIONAL WORK EXPERIENCE --
+  workExperience: [
+    {
+      title: "Embedded System Engineer",
+      company: "Frontier Semiconductor",
+      link: "https://frontiersemi.com/center/home.php",
+      date: "May 2026 - Present",
+      points: [
+        "Engineering robust embedded systems and hardware-software architectures for advanced semiconductor metrology equipment.",
+        "Contributing to product research and development to ensure high precision and performance."
+      ]
+    },
+    {
+      title: "Embedded System Engineer – RND Intern",
+      company: "Cybernetics Hi-Tech Solution (Pvt.) Ltd.",
+      link: "https://cyberneticsbd.com/",
+      date: "Feb 2026 - April 2026",
+      points: [
+        "Responsible for verifying technical decisions made by team members, ensuring accurate implementation and compliance with industry standards.",
+        "Contributing to the design and development of Autonomous Guided Vehicles (AGVs) for agricultural and factory applications, optimizing hardware and software performance.",
+        "Involved in the study of Meter Communication protocols (DCU, AMI) and STS cryptography implementation in DLMS protocol for secure metering.",
+        "Programming Cortex M0-based microcontrollers for anti-theft protection systems with low-power consumption.",
+        "Calibrating PLC modules for integration and data transmission over power lines.",
+        "Integrating ROS and Micro-ROS with embedded systems for real-time processing in robotics.",
+        "Contributing to object tracking systems for drones, enabling camera/sensor/Raspberry Pi communication."
+      ]
+    }
+  ],
+
+  // -- MANAGEMENT EXPERIENCE (UNIVERSITY CLUBS & LABS) --
+  managementExperience: [
+    {
+      title: "Executive Member & Assistant Head of Project Team",
+      company: "AUST Innovation and Design Club (IDC)",
+      date: "2021 - Present",
+      points: [
+        "Led technical projects, fostering innovation, cross-functional team coordination, and project execution.",
+        "Mentored junior members in embedded systems, hardware prototyping, and robotics development."
+      ]
+    },
+    {
+      title: "Founding Member",
+      company: "AUST Satellite Lab",
+      date: "2021 - Present",
+      points: [
+        "Co-founded the university satellite initiative; supported satellite research, testing methodologies, and embedded systems architecture."
+      ]
+    },
+    {
+      title: "Software and Navigation Team Member",
+      company: "AUST Model Rocketry",
+      date: "2021 - Present",
+      points: [
+        "Spearheaded software and navigation system testing, sensor integration, and automation routines for model rocketry."
+      ]
+    }
+  ],
+
+  // Legacy reference for backward compatibility
   experience: [
     {
       title: "Embedded System Engineer",
