@@ -21,7 +21,8 @@ import {
   MoreHorizontal,
   Copy,
   Check,
-  X
+  X,
+  BookOpen
 } from 'lucide-react';
 
 import { DATA } from './data';
@@ -113,6 +114,7 @@ const MobileMoreMenu = ({ scrollTo, activeSection }) => {
     { label: 'Home', target: 'home' },
     { label: 'About', target: 'about' },
     { label: 'Experience', target: 'experience' },
+    { label: 'Publications', target: 'publications' },
     { label: 'Projects', target: 'projects' },
     { label: 'Contact', target: 'contact' },
   ];
@@ -406,7 +408,7 @@ const App = () => {
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
-      const sections = ['home', 'about', 'experience', 'projects', 'contact'];
+      const sections = ['home', 'about', 'experience', 'publications', 'projects', 'contact'];
       for (const section of sections.reverse()) {
         const element = document.getElementById(section);
         if (element && window.scrollY >= element.offsetTop - 200) {
@@ -465,7 +467,7 @@ const App = () => {
           </motion.div>
           
           <div className="hidden md:flex gap-8 items-center font-mono text-sm">
-            {['About', 'Experience', 'Projects', 'Contact'].map((item, i) => (
+            {['About', 'Experience', 'Publications', 'Projects', 'Contact'].map((item, i) => (
               <motion.button 
                 key={item} 
                 initial={{ opacity: 0, y: -10 }}
@@ -814,6 +816,124 @@ const App = () => {
               })}
             </motion.div>
           </div>
+        </section>
+
+        {/* PUBLICATIONS & RESEARCH SECTION */}
+        <section id="publications" className="py-20 relative">
+          <SectionHeading>Publications & Research</SectionHeading>
+          
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+            variants={staggerContainer}
+            className="space-y-8 max-w-4xl"
+          >
+            {/* Peer-Reviewed Journal Publication */}
+            {DATA.publications && DATA.publications.map((pub, i) => (
+              <motion.div
+                key={i}
+                variants={fadeInUp}
+                className="glass-card p-6 md:p-8 rounded-3xl relative overflow-hidden group border-t-4 border-t-primary/70 hover:border-t-primary transition-all duration-500 shadow-xl"
+              >
+                <div className="absolute top-0 right-0 w-48 h-48 bg-primary/10 rounded-bl-full blur-[30px] group-hover:bg-primary/20 transition-all pointer-events-none"></div>
+                
+                <div className="flex flex-wrap items-center gap-2 mb-3">
+                  <span className="font-mono text-xs font-semibold text-primary bg-primary/10 border border-primary/25 px-3 py-1 rounded-full uppercase tracking-wider">
+                    Peer-Reviewed Journal
+                  </span>
+                  <span className="font-mono text-xs font-semibold text-green-600 dark:text-green-400 bg-green-500/10 border border-green-500/25 px-2.5 py-1 rounded-full">
+                    Elsevier Q1
+                  </span>
+                  <span className="font-mono text-xs text-slate-500 dark:text-slate-400 ml-auto">
+                    {pub.date}
+                  </span>
+                </div>
+
+                <h3 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white leading-snug mb-3 group-hover:text-primary transition-colors">
+                  {pub.title}
+                </h3>
+
+                <p className="font-mono text-xs md:text-sm text-secondary mb-3 font-medium">
+                  {pub.journal} &middot; {pub.volume}
+                </p>
+
+                <p className="text-xs text-slate-500 dark:text-slate-400 mb-4 leading-relaxed line-clamp-2">
+                  <span className="font-semibold text-slate-700 dark:text-slate-300">Authors:</span> {pub.authors}
+                </p>
+
+                <div className="bg-slate-50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/5 rounded-2xl p-4 md:p-5 mb-6">
+                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                    <span className="font-semibold text-primary font-mono text-xs uppercase tracking-wider block mb-1">Key Focus</span>
+                    {pub.focus}
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-slate-200 dark:border-white/5">
+                  <ul className="flex flex-wrap gap-1.5">
+                    {pub.tags.map((tag, j) => (
+                      <li key={j} className="font-mono text-[10px] bg-slate-100 dark:bg-white/[0.05] text-slate-700 dark:text-slate-300 px-2.5 py-1 rounded-md border border-slate-200 dark:border-white/[0.05]">
+                        {tag}
+                      </li>
+                    ))}
+                  </ul>
+
+                  <div className="flex items-center gap-3">
+                    {pub.doi && (
+                      <a
+                        href={pub.doi}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold text-primary hover:text-primary/80 transition-colors bg-primary/10 hover:bg-primary/20 px-3 py-1.5 rounded-lg border border-primary/20"
+                      >
+                        DOI <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
+                    )}
+                    {pub.scienceDirect && (
+                      <a
+                        href={pub.scienceDirect}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold text-secondary hover:text-secondary/80 transition-colors bg-secondary/10 hover:bg-secondary/20 px-3 py-1.5 rounded-lg border border-secondary/20"
+                      >
+                        ScienceDirect <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+
+            {/* B.Sc. Thesis */}
+            {DATA.thesis && (
+              <motion.div
+                variants={fadeInUp}
+                className="glass-card p-6 md:p-8 rounded-3xl relative overflow-hidden group border-t-4 border-t-secondary/70 hover:border-t-secondary transition-all duration-500 shadow-xl"
+              >
+                <div className="flex flex-wrap items-center gap-2 mb-3">
+                  <span className="font-mono text-xs font-semibold text-secondary bg-secondary/10 border border-secondary/25 px-3 py-1 rounded-full uppercase tracking-wider">
+                    {DATA.thesis.role}
+                  </span>
+                </div>
+
+                <h3 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white leading-snug mb-2 group-hover:text-secondary transition-colors">
+                  {DATA.thesis.title}
+                </h3>
+
+                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed mb-6">
+                  {DATA.thesis.description}
+                </p>
+
+                <ul className="flex flex-wrap gap-1.5 pt-2 border-t border-slate-200 dark:border-white/5">
+                  {DATA.thesis.tags.map((tag, j) => (
+                    <li key={j} className="font-mono text-[10px] bg-slate-100 dark:bg-white/[0.05] text-slate-700 dark:text-slate-300 px-2.5 py-1 rounded-md border border-slate-200 dark:border-white/[0.05]">
+                      {tag}
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            )}
+          </motion.div>
         </section>
 
         {/* EXTENSIVE PROJECTS SECTION */}

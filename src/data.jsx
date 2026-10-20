@@ -348,6 +348,28 @@ export const DATA = {
     "Finance: Experienced in compiling R&D and product development budgets."
   ],
 
+  // -- PUBLICATIONS & RESEARCH --
+  publications: [
+    {
+      title: "Hydrogen economy pathways for net-zero transitions: System integration, scalability barriers, and strategic deployment",
+      journal: "Energy Conversion and Management: X (Elsevier, Q1)",
+      volume: "Vol. 31, Art. 102165",
+      date: "July 2026",
+      authors: "R. Yeassin, T. S. Saiket, F. H. Fahad, A. Mia, M. Tarekuzzaman, M. E. Hoque, M. M. R. Adnan, Miraz Hossain, S. Chakraborty, M. A. Sufian, M. U. Koraishe, and M. Hasan",
+      focus: "Synthesized system-level integration, techno-economic feasibility, grid/storage balancing, and scalability barriers across green and low-carbon hydrogen pathways for industrial decarbonization.",
+      doi: "https://doi.org/10.1016/j.ecmx.2026.102165",
+      scienceDirect: "https://www.sciencedirect.com/science/article/pii/S2590174526006483",
+      tags: ["Elsevier", "Q1 Journal", "Decarbonization", "Hydrogen Economy", "Energy Systems"]
+    }
+  ],
+
+  thesis: {
+    title: "AI Adaptive PID Controller",
+    role: "Undergraduate Capstone Thesis",
+    description: "Designed an adaptive AI-based PID controller for multi-axis robotic arm motion control, integrating adaptive optimization algorithms for high-precision trajectory tracking.",
+    tags: ["Adaptive AI", "PID Control", "Robotics", "Motion Control"]
+  },
+
   honors: [
     "Invited to Cozmoclench, TechFest IIT Bombay – 2022",
     "Srijonshil Medha Onneshon (2nd position in Rajshahi Division, Class 9, 2016)"
