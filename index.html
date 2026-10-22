@@ -2,16 +2,32 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Miraz Hossain — Embedded Systems Engineer specializing in PCB design, low-power firmware, robotics, and IoT. Currently at Frontier Semiconductor." />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>Miraz Hossain · Embedded Systems Engineer</title>
+    <meta name="description" content="Miraz Hossain is an embedded systems engineer in Dhaka. He designs PCBs, writes firmware for microcontrollers and builds robots. Currently at Frontier Semiconductor." />
     <meta name="author" content="Miraz Hossain" />
-    <meta property="og:title" content="Miraz Hossain | Embedded Systems Engineer" />
-    <meta property="og:description" content="Embedded Systems Engineer | EEE Graduate | PCB Design, Robotics, IoT" />
+    <meta name="theme-color" content="#fafaf8" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0f1114" media="(prefers-color-scheme: dark)" />
+    <meta property="og:title" content="Miraz Hossain · Embedded Systems Engineer" />
+    <meta property="og:description" content="PCB design, firmware and robotics. Embedded systems engineer at Frontier Semiconductor, Dhaka." />
     <meta property="og:type" content="website" />
-    <title>Miraz Hossain</title>
-    <script type="module" crossorigin src="/assets/index-DvQWjq-L.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-Dbi6eHvT.css">
+    <meta property="og:url" content="https://mirajhossain364.github.io/" />
+    <meta property="og:image" content="https://mirajhossain364.github.io/profile.jpeg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <script>
+      // Apply the saved or system theme before first paint to avoid a flash.
+      (function () {
+        var theme;
+        try { theme = localStorage.getItem('theme'); } catch (e) {}
+        if (!theme) theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        if (theme === 'dark') document.documentElement.classList.add('dark');
+      })();
+    </script>
+    <script type="module" crossorigin src="/assets/index-DdTCXWlY.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-BhPp5Ujr.css">
   </head>
   <body>
     <div id="root"></div>
