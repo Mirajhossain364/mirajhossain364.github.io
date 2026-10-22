@@ -570,8 +570,13 @@ const Skills = () => {
             aria-expanded={showHardware}
           >
             <span>
-              <span className="block font-semibold text-ink">Hardware I've worked with</span>
-              <span className="block mt-1 text-sm text-muted">Sensors, radios, motor drivers, power modules and more.</span>
+              <span className="flex flex-wrap items-center gap-2">
+                <span className="font-semibold text-ink">Hardware I've worked with</span>
+                <span className="text-[11px] font-medium text-accent bg-accent-soft rounded px-1.5 py-0.5">Still growing</span>
+              </span>
+              <span className="block mt-1 text-sm text-muted max-w-2xl">
+                Most of this I picked up building projects as an undergrad. I'm still learning and trying new parts almost every day, so this list keeps getting longer.
+              </span>
             </span>
             <ChevronDown className={`w-5 h-5 shrink-0 text-muted group-hover:text-ink transition-transform ${showHardware ? 'rotate-180' : ''}`} />
           </button>
@@ -640,6 +645,23 @@ const Contact = () => {
   );
 };
 
+// --- CLOSING QUOTE ---
+const Quote = () => (
+  <section className="section">
+    <Reveal>
+      <figure className="max-w-3xl mx-auto text-center">
+        <span aria-hidden="true" className="block font-serif text-6xl leading-none text-accent/40 select-none">“</span>
+        <blockquote className="mt-2 text-xl md:text-2xl font-medium text-ink leading-relaxed tracking-tight">
+          {DATA.quote.text}
+        </blockquote>
+        <figcaption className="mt-6 text-sm text-muted">
+          {DATA.quote.author}, <cite className="italic">{DATA.quote.source}</cite>
+        </figcaption>
+      </figure>
+    </Reveal>
+  </section>
+);
+
 // --- MAIN APP COMPONENT ---
 const App = () => {
   const [theme, toggleTheme] = useTheme();
@@ -659,6 +681,7 @@ const App = () => {
         <Projects />
         <Skills />
         <Contact />
+        <Quote />
       </main>
 
       <footer className="border-t border-line">

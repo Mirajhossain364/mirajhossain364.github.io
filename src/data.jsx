@@ -315,6 +315,12 @@ export const DATA = {
     { name: "Vision & systems", items: ["industrial machine vision cameras", "ESP32-CAM (OV2640)", "Pixhawk PX4", "FlySky FS-i6X", "PAM8610"] },
   ],
 
+  quote: {
+    text: "The progressive development of man is vitally dependent on invention. It is the most important product of his creative brain.",
+    author: "Nikola Tesla",
+    source: "My Inventions (1919)",
+  },
+
   education: [
     {
       degree: "B.Sc. in Electrical and Electronic Engineering",
