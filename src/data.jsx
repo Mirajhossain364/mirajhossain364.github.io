@@ -13,17 +13,17 @@ export const DATA = {
   },
 
   intro:
-    "I build electronics from the board up: the PCB, the firmware that runs on it, and the software it talks to. Right now I'm working on embedded systems for semiconductor metrology equipment at Frontier Semiconductor in Dhaka.",
+    "I build electronics from the board up: the PCB, the firmware that runs on it, and the software it talks to. Right now I write firmware for semiconductor metrology and wafer inspection equipment at Frontier Semiconductor in Dhaka.",
 
   about: [
-    "I studied Electrical and Electronic Engineering at Ahsanullah University of Science and Technology and graduated in 2025. Alongside my coursework, I spent those four years building things: more than twenty projects, from a 16-servo humanoid robot to a CanSat that sent back weather readings in real time.",
-    "My work sits where hardware meets software. I lay out PCBs, write low-power firmware for ARM Cortex-M chips and connect embedded boards to ROS for robotics. The problems I enjoy most are the ones where you have to understand the whole system, not just one layer of it.",
+    "I studied Electrical and Electronic Engineering at Ahsanullah University of Science and Technology and graduated in 2025. Alongside my coursework I've built a lot of things, hundreds of projects by now, from a 16-servo humanoid robot to a CanSat that sent back weather readings in real time.",
+    "My work sits where hardware meets software. At Frontier I write C/C++ firmware for STM32 and Raspberry Pi Compute Module boards, build motion control for multi-axis stages and write Python tools to test the hardware. Before that I worked on smart-meter firmware and ROS-based robots. The problems I enjoy most are the ones where you have to understand the whole system, not just one layer of it.",
     "I also know the practical side of getting a product made. I've sourced parts from Dhaka's electronics markets (Jonson Road, Nawabpur, Patuatoli, Wari) and from suppliers like DigiKey, JLCPCB, Alibaba and AliExpress. I've negotiated prices with Chinese vendors and put together R&D budgets for product development.",
   ],
 
   quickFacts: [
     { label: "Currently", value: "Embedded Systems Engineer, Frontier Semiconductor" },
-    { label: "Education", value: "B.Sc. in EEE, AUST (2025)" },
+    { label: "Focus", value: "Firmware, motion control, PCB design" },
     { label: "Research", value: "Co-author, Elsevier Q1 journal paper (2026)" },
     { label: "Based in", value: "Dhaka, Bangladesh" },
   ],
@@ -36,8 +36,11 @@ export const DATA = {
       date: "May 2026 – Present",
       current: true,
       points: [
-        "Develop embedded hardware and firmware for the company's semiconductor metrology equipment.",
-        "Contribute to product R&D, with a focus on keeping the instruments precise and reliable.",
+        "Write production C/C++ firmware for semiconductor metrology and wafer inspection equipment, on STM32 and Raspberry Pi Compute Module platforms.",
+        "Build closed-loop stepper and servo motion control for multi-axis stages, with hardware fault handling and machine state saved to Flash.",
+        "Design digital filters that smooth optical sensor data for high-precision wafer measurement.",
+        "Write Python desktop apps for diagnostics, production and automated hardware verification.",
+        "Connect industrial machine vision cameras to OpenCV image processing for automatic wafer alignment, and look after the team's Git workflow for firmware.",
       ],
     },
     {
@@ -61,26 +64,26 @@ export const DATA = {
     {
       title: "Executive Member & Assistant Head of Project Team",
       company: "AUST Innovation and Design Club",
-      date: "2021 – Present",
+      date: "2021 – 2024",
       points: [
-        "Help run the club's technical projects and coordinate the people working on them.",
-        "Teach junior members embedded systems, hardware prototyping and robotics.",
+        "Helped run the club's technical projects and coordinated the people working on them.",
+        "Taught junior members embedded systems, hardware prototyping and robotics.",
       ],
     },
     {
       title: "Founding Member",
       company: "AUST Satellite Lab",
-      date: "2021 – Present",
+      date: "2021 – 2024",
       points: [
-        "One of the people who started the lab. I work on embedded systems design and testing for its satellite research.",
+        "One of the people who started the lab. I worked on embedded systems design and testing for its satellite research.",
       ],
     },
     {
       title: "Software & Navigation Team",
       company: "AUST Model Rocketry",
-      date: "2021 – Present",
+      date: "2021 – 2024",
       points: [
-        "Work on navigation software, sensor integration and testing for the team's model rockets.",
+        "Worked on navigation software, sensor integration and testing for the team's model rockets.",
       ],
     },
   ],
@@ -263,36 +266,53 @@ export const DATA = {
 
   skills: [
     {
+      category: "Firmware & control",
+      note: "What I spend most of my working day on.",
+      items: ["Closed-loop stepper & servo control", "Digital filtering (moving average, EMA, Kalman)", "Sensor calibration", "Hardware fault handling", "Flash state persistence", "Machine vision with OpenCV"],
+    },
+    {
       category: "Microcontrollers & boards",
-      items: ["STM32", "ESP32", "ESP32-C3", "ESP8266", "Arduino Uno / Nano / Mega", "Raspberry Pi 4B", "Raspberry Pi Pico", "HT5023"],
+      note: "Chips I've written firmware for.",
+      items: ["STM32 (F4, L4, H7)", "ARM Cortex-M0", "ESP32 / C3 / C6", "ESP8266", "Arduino Mega", "HT5023", "AT89C4051", "Raspberry Pi Compute Module", "Raspberry Pi 4B", "Raspberry Pi Pico"],
     },
     {
-      category: "Languages & software",
-      items: ["C++", "Python", "Verilog", "MATLAB / Simulink", "ROS / micro-ROS", "OpenCV", "MediaPipe", "NumPy", "TensorFlow", "YOLO", "DeepSORT", "Git"],
+      category: "Languages",
+      note: "C/C++ on the device, Python for the tools around it.",
+      items: ["C/C++", "Python", "MicroPython", "Verilog", "MATLAB / Simulink"],
     },
     {
-      category: "PCB, circuit & mechanical design",
-      items: ["Altium Designer", "EasyEDA", "Cadence Virtuoso", "Proteus", "Quartus Prime", "OrCAD PSpice", "SolidWorks", "AutoCAD"],
+      category: "Libraries & frameworks",
+      note: "For robotics, vision, machine learning and desktop tools.",
+      items: ["ROS / micro-ROS", "OpenCV", "MediaPipe", "NumPy", "TensorFlow", "YOLO", "DeepSORT", "Tkinter / CustomTkinter", "PyInstaller", "Linux (lgpio)"],
     },
     {
       category: "Protocols",
-      items: ["UART", "SPI", "I²C", "USB (CDC)", "RS485", "Bluetooth", "Wi-Fi", "LoRa", "GSM/GPRS", "GPS (NMEA)", "Ethernet", "MQTT", "HTTP/HTTPS", "TCP/IP", "UDP"],
+      note: "From board-level buses to industrial and network protocols.",
+      items: ["UART", "SPI", "I²C", "CAN", "RS-232", "RS-485", "Modbus", "DLMS", "USB (CDC)", "Bluetooth", "Wi-Fi", "LoRa", "GSM/GPRS (AT)", "GPS (NMEA)", "Ethernet", "TCP/IP", "MQTT", "HTTP/HTTPS", "WebSockets"],
     },
     {
-      category: "IDEs & tools",
-      items: ["STM32CubeIDE", "Keil", "PlatformIO", "VS Code", "Arduino IDE", "Thonny", "Android Studio", "MIT App Inventor"],
+      category: "Design & CAD",
+      note: "Schematics, PCB layout, simulation and mechanical parts.",
+      items: ["Altium Designer", "EasyEDA", "Cadence Virtuoso", "Proteus", "Quartus Prime", "OrCAD PSpice", "SolidWorks", "AutoCAD"],
+    },
+    {
+      category: "Dev & debug tools",
+      note: "Where the code gets written, flashed and versioned.",
+      items: ["STM32CubeIDE", "Keil", "J-Link", "PlatformIO", "VS Code", "Arduino IDE", "Thonny", "Git / GitHub", "Android Studio", "MIT App Inventor"],
     },
   ],
 
   hardware: [
-    { name: "Sensors", items: ["DHT11", "BMP180/280", "MPU6050", "ADXL335/345", "BNO055", "GP2Y0A21YK0F", "GP2Y1010AU0F", "HC-SR04", "HX711", "MAX30100", "PIR", "flow, soil, gas, flame & color sensors"] },
-    { name: "Positioning", items: ["NEO-6M / NEO-7M GPS", "EC11 rotary encoder"] },
-    { name: "Wireless & comms", items: ["SX1278 LoRa", "NRF24L01+", "HC-05/06", "SIM800L / 900A / 808 / A7670C", "TSOP1738 IR", "433 MHz ASK", "MNL80A PLC"] },
-    { name: "Programmers", items: ["FT232RL FTDI", "ST-Link V2", "USBasp"] },
-    { name: "Motors & drivers", items: ["Stepper, servo & BLDC motors", "30A ESC", "TB6600", "L298N", "L293D", "TB6612FNG", "BTS7960", "MD10C", "PCA9685"] },
-    { name: "Power", items: ["DALY BMS", "LM2596 / Mini-360 buck", "MT3608 boost", "LDOs", "PZEM-004T", "voltage & current sensors"] },
-    { name: "Displays & input", items: ["SSD1306 OLED", "SPI TFT", "16×2 LCD", "TM1637", "MAX7219", "keypad", "joystick"] },
-    { name: "Other", items: ["DS3231 RTC", "microSD", "MFRC522 RFID", "ESP32-CAM", "Pixhawk PX4", "FlySky radio"] },
+    { name: "Sensors & motion", items: ["BMP180/280", "MPU6050", "ADXL335/345", "BNO055", "GP2Y0A21YK0F", "GP2Y1010AU0F", "TCRT5000", "TTP223", "SW-420", "TCS230/TCS3200", "MQ-4", "temperature sensors"] },
+    { name: "Positioning", items: ["NEO-6M / 7M GPS", "EC11 encoder"] },
+    { name: "Wireless & comms", items: ["SX1278 LoRa", "NRF24L01+", "HC-05/06", "SIM808 / SIM800L / SIM900A", "A7670C", "MNL80A PLC", "433 MHz ASK", "TSOP1738"] },
+    { name: "Programmers", items: ["FT232RL", "ST-Link V2", "USBasp"] },
+    { name: "Motion & drives", items: ["NEMA-17", "28BYJ-48", "MG996R", "BLDC / ESC", "industrial servo & stepper drives", "TB6600", "L293D", "L298N", "TB6612FNG", "BTS7960", "Cytron MD10C", "PCA9685"] },
+    { name: "Power", items: ["DALY BMS", "LM2596", "MT3608", "LDOs", "ZMPT101B", "ACS712", "PZEM-004T", "PCF8574"] },
+    { name: "Measurement", items: ["YF-S201", "HX711", "MAX30100", "FC-28", "HC-SR501"] },
+    { name: "Displays & HMI", items: ["TM1637", "16×2 LCD", "SSD1306", "MAX7219", "ST7789V TFT", "4×4 keypad"] },
+    { name: "Storage & ID", items: ["DS3231", "microSD", "MFRC522"] },
+    { name: "Vision & systems", items: ["industrial machine vision cameras", "ESP32-CAM (OV2640)", "Pixhawk PX4", "FlySky FS-i6X", "PAM8610"] },
   ],
 
   education: [
@@ -300,7 +320,7 @@ export const DATA = {
       degree: "B.Sc. in Electrical and Electronic Engineering",
       institution: "Ahsanullah University of Science and Technology",
       date: "2021 – 2025",
-      details: "Coursework in circuit design, power systems, control systems, microcontrollers, VLSI and digital signal processing.",
+      details: "Coursework included circuit design, power systems, control system design, microcontrollers, computer architecture, DSP, VLSI, image processing and medical device design.",
     },
     {
       degree: "Higher Secondary Certificate, Science",
@@ -312,10 +332,5 @@ export const DATA = {
       institution: "Pabna Zilla School",
       date: "2018",
     },
-  ],
-
-  honors: [
-    { title: "Invited to Cozmoclench, Techfest IIT Bombay", date: "2022" },
-    { title: "2nd place, Rajshahi Division, Srijonshil Medha Onneshon", date: "2016" },
   ],
 };

@@ -292,6 +292,26 @@ const About = () => (
         </dl>
       </Reveal>
     </div>
+
+    <div className="mt-20">
+      <Reveal className="mb-8">
+        <h3 className="text-xl font-semibold text-ink">Education</h3>
+      </Reveal>
+      <div>
+        {DATA.education.map((edu) => (
+          <Reveal key={edu.degree} className="border-t border-line first:border-t-0 py-6 first:pt-0">
+            <div className="grid md:grid-cols-[11rem_1fr] gap-1 md:gap-10">
+              <p className="font-mono text-xs text-faint pt-1">{edu.date}</p>
+              <div>
+                <p className="font-semibold text-ink">{edu.degree}</p>
+                <p className="text-muted mt-0.5">{edu.institution}</p>
+                {edu.details && <p className="mt-3 text-[15px] text-muted leading-relaxed max-w-2xl">{edu.details}</p>}
+              </div>
+            </div>
+          </Reveal>
+        ))}
+      </div>
+    </div>
   </section>
 );
 
@@ -451,17 +471,18 @@ const ProjectsModal = ({ onClose }) => {
         transition={{ duration: 0.2 }}
         className="relative w-full max-w-5xl max-h-[92vh] sm:max-h-[88vh] bg-page border border-line rounded-t-xl sm:rounded-xl flex flex-col overflow-hidden"
       >
-        <div className="flex items-start justify-between gap-4 px-5 sm:px-8 pt-6 pb-4">
+        {/* shrink-0 keeps the header and filters from being squashed when the list is long */}
+        <div className="shrink-0 flex items-start justify-between gap-4 px-5 sm:px-8 pt-6 pb-4">
           <div>
-            <h3 id="projects-title" className="text-xl font-semibold text-ink">All projects</h3>
-            <p className="text-sm text-muted mt-1">{DATA.projects.length} projects from my undergraduate years</p>
+            <h3 id="projects-title" className="text-xl font-semibold text-ink">More projects</h3>
+            <p className="text-sm text-muted mt-1">A wider selection of things I've built</p>
           </div>
           <button onClick={onClose} className="p-2 -mr-2 rounded-md text-muted hover:text-ink hover:bg-ink/5" aria-label="Close">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="px-5 sm:px-8 pb-4 border-b border-line overflow-x-auto no-scrollbar">
+        <div className="shrink-0 px-5 sm:px-8 py-1 pb-4 border-b border-line overflow-x-auto no-scrollbar">
           <div className="flex gap-2 w-max">
             {filters.map((f) => (
               <button
@@ -477,7 +498,7 @@ const ProjectsModal = ({ onClose }) => {
           </div>
         </div>
 
-        <div className="overflow-y-auto px-5 sm:px-8 py-6">
+        <div className="flex-1 min-h-0 overflow-y-auto px-5 sm:px-8 py-6">
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {shown.map((project) => (
               <ProjectCard key={project.title} project={project} />
@@ -496,7 +517,7 @@ const Projects = () => {
   return (
     <section id="projects" className="section">
       <SectionHeader eyebrow="Projects" title="Things I've built">
-        A few favourites from my undergraduate years. The full list has all 24.
+        I've built hundreds of projects over the years. These are a few of my favourites.
       </SectionHeader>
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {featured.map((project, i) => (
@@ -507,7 +528,7 @@ const Projects = () => {
       </div>
       <Reveal className="mt-10">
         <button onClick={() => setOpen(true)} className="btn-secondary">
-          See all {DATA.projects.length} projects <ArrowRight className="w-4 h-4" />
+          View more projects <ArrowRight className="w-4 h-4" />
         </button>
       </Reveal>
       {open && <ProjectsModal onClose={() => setOpen(false)} />}
@@ -515,75 +536,57 @@ const Projects = () => {
   );
 };
 
-// --- SKILLS & EDUCATION ---
+// --- SKILLS ---
 const Skills = () => {
   const [showHardware, setShowHardware] = useState(false);
 
   return (
     <section id="skills" className="section">
-      <SectionHeader eyebrow="Skills" title="Tools I work with" />
-      <Reveal>
-        <dl className="divide-y divide-line border-y border-line">
-          {DATA.skills.map((group) => (
-            <div key={group.category} className="grid md:grid-cols-[16rem_1fr] gap-2 md:gap-10 py-5">
-              <dt className="text-sm font-medium text-ink">{group.category}</dt>
-              <dd className="text-[15px] text-muted leading-relaxed">{group.items.join(' · ')}</dd>
-            </div>
-          ))}
-          <div className="py-5">
-            <button
-              onClick={() => setShowHardware(!showHardware)}
-              className="w-full grid md:grid-cols-[16rem_1fr] gap-2 md:gap-10 text-left group"
-              aria-expanded={showHardware}
-            >
-              <span className="text-sm font-medium text-ink">Hardware I've used</span>
-              <span className="text-[15px] text-muted inline-flex items-center gap-1.5 group-hover:text-ink transition-colors">
-                {showHardware ? 'Hide' : 'Show'} sensors, modules and drivers
-                <ChevronDown className={`w-4 h-4 transition-transform ${showHardware ? 'rotate-180' : ''}`} />
-              </span>
-            </button>
-            {showHardware && (
-              <div className="mt-5 grid sm:grid-cols-2 gap-x-10 gap-y-5 md:pl-[18.5rem]">
-                {DATA.hardware.map((group) => (
-                  <div key={group.name}>
-                    <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-faint">{group.name}</p>
-                    <p className="mt-1.5 text-sm text-muted leading-relaxed">{group.items.join(', ')}</p>
-                  </div>
+      <SectionHeader eyebrow="Skills" title="What I work with">
+        Grouped the way I actually use them, from the firmware I write every day to the tools around it.
+      </SectionHeader>
+
+      <div className="grid md:grid-cols-2 gap-4">
+        {DATA.skills.map((group, i) => (
+          <Reveal key={group.category} delay={(i % 2) * 0.05} className={`h-full ${i === 0 ? 'md:col-span-2' : ''}`}>
+            <div className="card p-6 h-full">
+              <h3 className="font-semibold text-ink">{group.category}</h3>
+              <p className="mt-1 text-sm text-muted">{group.note}</p>
+              <div className="mt-4 flex flex-wrap gap-1.5">
+                {group.items.map((item) => (
+                  <span key={item} className={i === 0 ? 'chip !text-ink !border-accent/30 bg-accent-soft' : 'chip'}>{item}</span>
                 ))}
               </div>
-            )}
-          </div>
-        </dl>
-      </Reveal>
-
-      <div className="mt-20 grid lg:grid-cols-2 gap-12 lg:gap-16">
-        <Reveal>
-          <h3 className="text-xl font-semibold text-ink mb-6">Education</h3>
-          <ul className="space-y-6">
-            {DATA.education.map((edu) => (
-              <li key={edu.degree}>
-                <div className="flex flex-wrap items-baseline justify-between gap-x-4">
-                  <p className="font-medium text-ink">{edu.institution}</p>
-                  <p className="font-mono text-xs text-faint">{edu.date}</p>
-                </div>
-                <p className="text-sm text-muted mt-0.5">{edu.degree}</p>
-                {edu.details && <p className="text-sm text-muted mt-2 leading-relaxed">{edu.details}</p>}
-              </li>
-            ))}
-          </ul>
-        </Reveal>
-        <Reveal delay={0.05}>
-          <h3 className="text-xl font-semibold text-ink mb-6">Honors</h3>
-          <ul className="space-y-4">
-            {DATA.honors.map((h) => (
-              <li key={h.title} className="flex items-baseline justify-between gap-4">
-                <p className="text-sm text-muted leading-relaxed">{h.title}</p>
-                <p className="font-mono text-xs text-faint shrink-0">{h.date}</p>
-              </li>
-            ))}
-          </ul>
-        </Reveal>
+            </div>
+          </Reveal>
+        ))}
       </div>
+
+      <Reveal className="mt-4">
+        <div className="card">
+          <button
+            onClick={() => setShowHardware(!showHardware)}
+            className="w-full flex items-center justify-between gap-4 p-6 text-left group"
+            aria-expanded={showHardware}
+          >
+            <span>
+              <span className="block font-semibold text-ink">Hardware I've worked with</span>
+              <span className="block mt-1 text-sm text-muted">Sensors, radios, motor drivers, power modules and more.</span>
+            </span>
+            <ChevronDown className={`w-5 h-5 shrink-0 text-muted group-hover:text-ink transition-transform ${showHardware ? 'rotate-180' : ''}`} />
+          </button>
+          {showHardware && (
+            <div className="px-6 pb-6 pt-5 border-t border-line grid sm:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-5">
+              {DATA.hardware.map((group) => (
+                <div key={group.name}>
+                  <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-faint">{group.name}</p>
+                  <p className="mt-1.5 text-sm text-muted leading-relaxed">{group.items.join(', ')}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </Reveal>
     </section>
   );
 };
