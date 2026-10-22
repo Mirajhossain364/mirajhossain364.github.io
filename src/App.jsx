@@ -1,1026 +1,670 @@
 import React, { useState, useEffect } from 'react';
-import { motion, useScroll, useSpring } from 'framer-motion';
-import { 
-  Github, 
-  Linkedin, 
-  Mail, 
-  Phone, 
-  ExternalLink, 
-  Cpu, 
-  Code, 
-  Terminal,
-  Radio,
+import { motion, useReducedMotion } from 'framer-motion';
+import {
+  Github,
+  Linkedin,
   Youtube,
-  ChevronRight,
-  GraduationCap,
-  Moon,
-  Sun,
-  Award,
-  Briefcase,
-  Users,
-  MoreHorizontal,
+  Mail,
+  Phone,
+  MapPin,
+  Download,
+  ArrowRight,
+  ArrowUpRight,
   Copy,
   Check,
+  Moon,
+  Sun,
+  Menu,
   X,
-  BookOpen
+  ChevronDown,
 } from 'lucide-react';
 
 import { DATA } from './data';
 
+const NAV_ITEMS = [
+  { id: 'about', label: 'About' },
+  { id: 'experience', label: 'Experience' },
+  { id: 'research', label: 'Research' },
+  { id: 'projects', label: 'Projects' },
+  { id: 'skills', label: 'Skills' },
+  { id: 'contact', label: 'Contact' },
+];
 
+const SOCIALS = [
+  { href: DATA.socials.github, label: 'GitHub', Icon: Github },
+  { href: DATA.socials.linkedin, label: 'LinkedIn', Icon: Linkedin },
+  { href: DATA.socials.youtube, label: 'YouTube', Icon: Youtube },
+];
 
-// --- ANIMATION VARIANTS ---
-const fadeInUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
-};
+// --- HOOKS ---
+const useTheme = () => {
+  const [theme, setTheme] = useState(() =>
+    document.documentElement.classList.contains('dark') ? 'dark' : 'light'
+  );
 
-const staggerContainer = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.2
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+    try {
+      localStorage.setItem('theme', theme);
+    } catch (e) {
+      // storage can be blocked; the theme still applies for this visit
     }
-  }
+  }, [theme]);
+
+  return [theme, () => setTheme(theme === 'dark' ? 'light' : 'dark')];
 };
 
-const SkillCard = ({ skillGroup }) => {
-  const [expanded, setExpanded] = useState(null);
+const useActiveSection = (ids) => {
+  const [active, setActive] = useState(null);
 
-  if (skillGroup.subCategories) {
-    return (
-      <motion.div variants={fadeInUp} className="glass-card p-5 rounded-xl group relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-100 dark:from-white/[0.01] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-        <div className="relative z-10">
-          <div className="flex items-center gap-3 mb-4">
-            {skillGroup.icon}
-            <h3 className="text-slate-900 dark:text-white font-semibold tracking-wide">{skillGroup.category}</h3>
-          </div>
-          <div className="grid gap-2">
-            {skillGroup.subCategories.map((cat, idx) => (
-              <div key={idx} className="border border-slate-200 dark:border-white/5 rounded-lg overflow-hidden">
-                <button 
-                  onClick={() => setExpanded(expanded === idx ? null : idx)}
-                  className="w-full flex items-center justify-between p-3 bg-slate-50 dark:bg-white/[0.02] hover:bg-slate-100 dark:hover:bg-white/[0.05] transition-colors"
-                >
-                  <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{cat.name}</span>
-                  <ChevronRight className={`w-3 h-3 transition-transform ${expanded === idx ? 'rotate-90' : ''}`} />
-                </button>
-                {expanded === idx && (
-                  <motion.div 
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    className="p-3 bg-white dark:bg-[#040211]/30 flex flex-wrap gap-2 border-t border-slate-200 dark:border-white/5"
-                  >
-                    {cat.items.map((item, j) => (
-                      <span key={j} className="text-[10px] font-mono bg-primary/5 text-primary-dark dark:text-primary px-2 py-1 rounded">
-                        {item}
-                      </span>
-                    ))}
-                  </motion.div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </motion.div>
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setActive(entry.target.id);
+        });
+      },
+      { rootMargin: '-45% 0px -50% 0px' }
     );
-  }
+    ids.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+    return () => observer.disconnect();
+  }, [ids]);
 
+  return active;
+};
+
+const useCopy = () => {
+  const [copied, setCopied] = useState(false);
+  const copy = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (e) {
+      // clipboard unavailable; nothing to do
+    }
+  };
+  return [copied, copy];
+};
+
+// --- SMALL COMPONENTS ---
+const Reveal = ({ children, className = '', delay = 0 }) => {
+  const reduce = useReducedMotion();
   return (
-    <motion.div variants={fadeInUp} className="glass-card p-5 rounded-xl group relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-r from-slate-100 dark:from-white/[0.01] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-      <div className="relative z-10">
-        <div className="flex items-center gap-3 mb-4">
-          {skillGroup.icon}
-          <h3 className="text-slate-900 dark:text-white font-semibold tracking-wide">{skillGroup.category}</h3>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {skillGroup.items.map((item, j) => (
-            <span key={j} className="text-xs font-mono bg-slate-100 dark:bg-white/[0.05] text-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-full border border-slate-200 dark:border-white/[0.05] group-hover:border-primary/30 transition-colors shadow-sm dark:shadow-none">{item}</span>
-          ))}
-        </div>
-      </div>
+    <motion.div
+      initial={reduce ? false : { opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ duration: 0.5, ease: 'easeOut', delay }}
+      className={className}
+    >
+      {children}
     </motion.div>
   );
 };
 
-// --- MOBILE MORE MENU ---
-const MobileMoreMenu = ({ scrollTo, activeSection }) => {
-  const [open, setOpen] = useState(false);
+const SectionHeader = ({ eyebrow, title, children }) => (
+  <Reveal className="mb-12 md:mb-16 max-w-2xl">
+    <p className="eyebrow">{eyebrow}</p>
+    <h2 className="section-title">{title}</h2>
+    {children && <p className="mt-4 text-muted leading-relaxed">{children}</p>}
+  </Reveal>
+);
 
-  const items = [
-    { label: 'Home', target: 'home' },
-    { label: 'About', target: 'about' },
-    { label: 'Experience', target: 'experience' },
-    { label: 'Publications', target: 'publications' },
-    { label: 'Projects', target: 'projects' },
-    { label: 'Contact', target: 'contact' },
-  ];
+const ExternalLink = ({ href, children, className = '' }) => (
+  <a href={href} target="_blank" rel="noopener noreferrer" className={className}>
+    {children}
+  </a>
+);
 
-  const handleClick = (target) => {
-    setOpen(false);
-    setTimeout(() => scrollTo(target), 100);
-  };
+const SocialLinks = ({ className = '' }) => (
+  <div className={`flex items-center gap-1 ${className}`}>
+    {SOCIALS.map(({ href, label, Icon }) => (
+      <ExternalLink
+        key={label}
+        href={href}
+        className="p-2 rounded-md text-muted hover:text-ink hover:bg-ink/5 transition-colors"
+      >
+        <Icon className="w-[18px] h-[18px]" aria-hidden="true" />
+        <span className="sr-only">{label}</span>
+      </ExternalLink>
+    ))}
+  </div>
+);
+
+// --- NAVIGATION ---
+const Nav = ({ theme, toggleTheme }) => {
+  const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const active = useActiveSection(NAV_ITEMS.map((n) => n.id));
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const ThemeButton = (
+    <button
+      onClick={toggleTheme}
+      className="p-2 rounded-md text-muted hover:text-ink hover:bg-ink/5 transition-colors"
+      aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+    >
+      {theme === 'dark' ? <Sun className="w-[18px] h-[18px]" /> : <Moon className="w-[18px] h-[18px]" />}
+    </button>
+  );
 
   return (
-    <div className="relative">
-      <button
-        onClick={() => setOpen(!open)}
-        className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-white/10 transition-colors"
-        aria-label="More menu"
-      >
-        {open ? <X className="w-5 h-5" /> : <MoreHorizontal className="w-5 h-5" />}
-      </button>
+    <header
+      className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
+        scrolled || menuOpen ? 'bg-page/90 backdrop-blur-md border-b border-line' : 'border-b border-transparent'
+      }`}
+    >
+      <nav className="max-w-site mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
+        <a href="#top" className="font-semibold tracking-tight text-ink" onClick={() => setMenuOpen(false)}>
+          Miraz Hossain
+        </a>
 
-      {open && (
-        <>
-          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <motion.div
-            initial={{ opacity: 0, y: -10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.95 }}
-            transition={{ duration: 0.15 }}
-            className="absolute right-0 top-full mt-2 z-50 w-56 bg-white dark:bg-[#0a0820] border border-slate-200 dark:border-white/10 rounded-xl p-2 shadow-2xl"
+        <div className="hidden md:flex items-center gap-1">
+          {NAV_ITEMS.map((item) => (
+            <a
+              key={item.id}
+              href={`#${item.id}`}
+              className={`px-3 py-2 text-sm rounded-md transition-colors ${
+                active === item.id ? 'text-ink font-medium' : 'text-muted hover:text-ink'
+              }`}
+            >
+              {item.label}
+            </a>
+          ))}
+          <span className="w-px h-5 bg-line mx-2" />
+          {ThemeButton}
+          <a href={DATA.cv} download className="btn-secondary ml-2 !px-3.5 !py-2">
+            <Download className="w-4 h-4" /> CV
+          </a>
+        </div>
+
+        <div className="flex md:hidden items-center gap-1">
+          {ThemeButton}
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="p-2 rounded-md text-ink hover:bg-ink/5 transition-colors"
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={menuOpen}
           >
-            {items.map((item) => (
-              <button
-                key={item.target}
-                onClick={() => handleClick(item.target)}
-                className={`w-full text-left flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 transition-colors font-mono text-sm ${
-                  activeSection === item.target
-                    ? 'text-primary font-semibold'
-                    : 'text-slate-700 dark:text-slate-300'
-                }`}
+            {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+        </div>
+      </nav>
+
+      {menuOpen && (
+        <div className="md:hidden border-t border-line bg-page">
+          <div className="max-w-site mx-auto px-5 py-3 flex flex-col">
+            {NAV_ITEMS.map((item) => (
+              <a
+                key={item.id}
+                href={`#${item.id}`}
+                onClick={() => setMenuOpen(false)}
+                className={`py-3 border-b border-line last:border-0 ${active === item.id ? 'text-ink font-medium' : 'text-muted'}`}
               >
-                <span>{item.label}</span>
-              </button>
+                {item.label}
+              </a>
             ))}
-          </motion.div>
-        </>
+            <a href={DATA.cv} download className="btn-primary mt-4 mb-2">
+              <Download className="w-4 h-4" /> Download CV
+            </a>
+          </div>
+        </div>
       )}
-    </div>
+    </header>
   );
 };
 
-// --- PROJECTS MODAL ---
-const ProjectsModal = ({ open, onClose }) => {
+// --- HERO ---
+const Hero = () => (
+  <section id="top" className="pt-32 pb-20 md:pt-40 md:pb-28">
+    <div className="grid md:grid-cols-[1fr_auto] gap-12 md:gap-16 items-center">
+      <Reveal>
+        <p className="inline-flex items-center gap-2 text-sm text-muted">
+          <span className="relative flex w-2 h-2">
+            <span className="absolute inline-flex w-full h-full rounded-full bg-emerald-500 opacity-60 motion-safe:animate-ping" />
+            <span className="relative inline-flex w-2 h-2 rounded-full bg-emerald-500" />
+          </span>
+          {DATA.role} at {DATA.company}
+        </p>
+        <h1 className="mt-5 text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-ink leading-[1.08]">
+          Hi, I'm Miraz.
+          <span className="block text-muted">I design embedded systems, from PCB to firmware.</span>
+        </h1>
+        <p className="mt-6 text-lg text-muted leading-relaxed max-w-xl">{DATA.intro}</p>
+
+        <div className="mt-9 flex flex-wrap items-center gap-3">
+          <a href={DATA.cv} download className="btn-primary">
+            <Download className="w-4 h-4" /> Download CV
+          </a>
+          <a href="#contact" className="btn-secondary">
+            Get in touch <ArrowRight className="w-4 h-4" />
+          </a>
+          <SocialLinks className="ml-1" />
+        </div>
+      </Reveal>
+
+      <Reveal delay={0.1} className="order-first md:order-none">
+        <div className="w-36 h-36 sm:w-44 sm:h-44 md:w-72 md:h-80 rounded-xl overflow-hidden border border-line bg-surface">
+          <img
+            src="/profile.jpeg"
+            alt="Portrait of Miraz Hossain"
+            className="w-full h-full object-cover"
+            width="288"
+            height="320"
+          />
+        </div>
+      </Reveal>
+    </div>
+  </section>
+);
+
+// --- ABOUT ---
+const About = () => (
+  <section id="about" className="section">
+    <div className="grid lg:grid-cols-[1fr_20rem] gap-12 lg:gap-20">
+      <div>
+        <SectionHeader eyebrow="About" title="A bit about me" />
+        <Reveal className="space-y-5 text-[17px] leading-[1.75] text-muted max-w-2xl">
+          {DATA.about.map((p, i) => (
+            <p key={i}>{p}</p>
+          ))}
+        </Reveal>
+      </div>
+
+      <Reveal delay={0.1} className="lg:pt-20">
+        <dl className="card divide-y divide-line">
+          {DATA.quickFacts.map((fact) => (
+            <div key={fact.label} className="px-5 py-4">
+              <dt className="font-mono text-[11px] uppercase tracking-[0.12em] text-faint">{fact.label}</dt>
+              <dd className="mt-1 text-sm text-ink">{fact.value}</dd>
+            </div>
+          ))}
+        </dl>
+      </Reveal>
+    </div>
+  </section>
+);
+
+// --- EXPERIENCE ---
+const Role = ({ item }) => (
+  <Reveal className="border-t border-line first:border-t-0 py-8 first:pt-0">
+    <article className="grid md:grid-cols-[11rem_1fr] gap-2 md:gap-10">
+      <p className="font-mono text-xs text-faint pt-1.5 flex md:flex-col gap-2 md:gap-2 items-center md:items-start">
+        {item.date}
+        {item.current && (
+          <span className="font-sans text-[11px] font-medium text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 rounded px-1.5 py-0.5">
+            Current
+          </span>
+        )}
+      </p>
+      <div>
+        <h3 className="text-lg font-semibold text-ink">{item.title}</h3>
+        <p className="text-muted mt-0.5">
+          {item.link ? (
+            <ExternalLink href={item.link} className="inline-flex items-center gap-1 hover:text-accent transition-colors">
+              {item.company} <ArrowUpRight className="w-3.5 h-3.5" />
+            </ExternalLink>
+          ) : (
+            item.company
+          )}
+        </p>
+        <ul className="mt-4 space-y-2.5 max-w-2xl">
+          {item.points.map((point, j) => (
+            <li key={j} className="relative pl-5 text-[15px] leading-relaxed text-muted before:content-[''] before:absolute before:left-0 before:top-[0.7em] before:w-2 before:h-px before:bg-faint">
+              {point}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </article>
+  </Reveal>
+);
+
+const Experience = () => (
+  <section id="experience" className="section">
+    <SectionHeader eyebrow="Experience" title="Where I've worked" />
+    <div>
+      {DATA.workExperience.map((item, i) => (
+        <Role key={i} item={item} />
+      ))}
+    </div>
+
+    <Reveal className="mt-16 mb-8">
+      <h3 className="text-xl font-semibold text-ink">Leadership & university clubs</h3>
+    </Reveal>
+    <div>
+      {DATA.leadership.map((item, i) => (
+        <Role key={i} item={item} />
+      ))}
+    </div>
+  </section>
+);
+
+// --- RESEARCH ---
+const Authors = ({ authors }) => {
+  const parts = authors.split(DATA.name);
+  return (
+    <>
+      {parts.map((part, i) => (
+        <React.Fragment key={i}>
+          {part}
+          {i < parts.length - 1 && <strong className="font-semibold text-ink">{DATA.name}</strong>}
+        </React.Fragment>
+      ))}
+    </>
+  );
+};
+
+const Research = () => (
+  <section id="research" className="section">
+    <SectionHeader eyebrow="Research" title="Publications & thesis" />
+    <div className="space-y-6 max-w-4xl">
+      {DATA.publications.map((pub, i) => (
+        <Reveal key={i}>
+          <article className="card p-6 md:p-8">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs">
+              <span className="font-medium text-accent bg-accent-soft rounded px-2 py-1">Journal article</span>
+              <span className="text-faint font-mono">{pub.publisher}</span>
+              <span className="text-faint font-mono sm:ml-auto">{pub.date}</span>
+            </div>
+            <h3 className="mt-4 text-xl md:text-2xl font-semibold text-ink leading-snug">{pub.title}</h3>
+            <p className="mt-3 text-sm text-muted leading-relaxed">
+              <Authors authors={pub.authors} />
+            </p>
+            <p className="mt-2 text-sm text-muted italic">
+              {pub.journal}, {pub.volume}
+            </p>
+            <p className="mt-5 text-[15px] text-muted leading-relaxed border-l-2 border-line pl-4">{pub.summary}</p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <ExternalLink href={pub.doi} className="btn-secondary !py-2 !px-4">
+                DOI <ArrowUpRight className="w-4 h-4" />
+              </ExternalLink>
+              <ExternalLink href={pub.scienceDirect} className="btn-secondary !py-2 !px-4">
+                Read on ScienceDirect <ArrowUpRight className="w-4 h-4" />
+              </ExternalLink>
+            </div>
+          </article>
+        </Reveal>
+      ))}
+
+      <Reveal>
+        <article className="card p-6 md:p-8">
+          <span className="text-xs font-medium text-muted bg-ink/5 rounded px-2 py-1">{DATA.thesis.role}</span>
+          <h3 className="mt-4 text-xl font-semibold text-ink">{DATA.thesis.title}</h3>
+          <p className="mt-3 text-[15px] text-muted leading-relaxed max-w-2xl">{DATA.thesis.description}</p>
+          <div className="mt-5 flex flex-wrap gap-1.5">
+            {DATA.thesis.tags.map((tag) => (
+              <span key={tag} className="chip">{tag}</span>
+            ))}
+          </div>
+        </article>
+      </Reveal>
+    </div>
+  </section>
+);
+
+// --- PROJECTS ---
+const ProjectCard = ({ project }) => (
+  <article className="card p-6 h-full flex flex-col hover:border-ink/25 transition-colors">
+    <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-faint">{project.category}</p>
+    <h3 className="mt-2 text-base font-semibold text-ink leading-snug">{project.title}</h3>
+    <p className="mt-2 text-sm text-muted leading-relaxed flex-grow">{project.description}</p>
+    <div className="mt-5 flex flex-wrap gap-1.5">
+      {project.tags.map((tag) => (
+        <span key={tag} className="chip">{tag}</span>
+      ))}
+    </div>
+  </article>
+);
+
+const ProjectsModal = ({ onClose }) => {
   const [filter, setFilter] = useState('All');
+  const filters = ['All', ...DATA.projectCategories];
+  const shown = filter === 'All' ? DATA.projects : DATA.projects.filter((p) => p.category === filter);
 
-  // Collect unique tags
-  const allTags = ['All', ...new Set(DATA.projects.flatMap(p => p.tags))];
-  const filtered = filter === 'All'
-    ? DATA.projects
-    : DATA.projects.filter(p => p.tags.includes(filter));
-
-  if (!open) return null;
+  useEffect(() => {
+    const onKey = (e) => e.key === 'Escape' && onClose();
+    document.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = '';
+    };
+  }, [onClose]);
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-6"
-    >
-      <div
-        className="absolute inset-0 bg-slate-900/80 dark:bg-black/85 backdrop-blur-md"
-        onClick={onClose}
-      />
+    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center sm:p-6" role="dialog" aria-modal="true" aria-labelledby="projects-title">
+      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.25 }}
-        className="relative w-full max-w-5xl max-h-[90vh] bg-white dark:bg-[#0a0820] rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2 }}
+        className="relative w-full max-w-5xl max-h-[92vh] sm:max-h-[88vh] bg-page border border-line rounded-t-xl sm:rounded-xl flex flex-col overflow-hidden"
       >
-        <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-white/10">
+        <div className="flex items-start justify-between gap-4 px-5 sm:px-8 pt-6 pb-4">
           <div>
-            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">All Undergrad Projects</h3>
-            <p className="text-sm text-slate-500 font-mono mt-1">Curated academic & hands-on engineering projects</p>
+            <h3 id="projects-title" className="text-xl font-semibold text-ink">All projects</h3>
+            <p className="text-sm text-muted mt-1">{DATA.projects.length} projects from my undergraduate years</p>
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
-            aria-label="Close"
-          >
+          <button onClick={onClose} className="p-2 -mr-2 rounded-md text-muted hover:text-ink hover:bg-ink/5" aria-label="Close">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Filter chips - sleek scrollable container without cropping */}
-        <div className="px-6 py-3.5 border-b border-slate-200 dark:border-white/10 overflow-x-auto no-scrollbar scroll-smooth">
-          <div className="flex gap-2 min-w-min items-center py-0.5">
-            {allTags.map(tag => (
+        <div className="px-5 sm:px-8 pb-4 border-b border-line overflow-x-auto no-scrollbar">
+          <div className="flex gap-2 w-max">
+            {filters.map((f) => (
               <button
-                key={tag}
-                onClick={() => setFilter(tag)}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-mono whitespace-nowrap shrink-0 transition-all ${
-                  filter === tag
-                    ? 'bg-primary text-white shadow-md font-semibold'
-                    : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
+                key={f}
+                onClick={() => setFilter(f)}
+                className={`px-3 py-1.5 rounded-md text-sm whitespace-nowrap transition-colors ${
+                  filter === f ? 'bg-ink text-page' : 'text-muted border border-line hover:text-ink'
                 }`}
               >
-                {tag}
+                {f}
               </button>
             ))}
           </div>
         </div>
 
-        <div className="overflow-y-auto p-6">
+        <div className="overflow-y-auto px-5 sm:px-8 py-6">
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filtered.map((project, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.03 }}
-                className="glass-card p-5 rounded-xl flex flex-col h-full"
-              >
-                <h4 className="text-base font-bold text-slate-900 dark:text-white mb-2 leading-tight">{project.title}</h4>
-                <p className="text-slate-600 dark:text-slate-400 text-xs leading-relaxed flex-grow mb-4">{project.description}</p>
-                <ul className="flex flex-wrap gap-1 mt-auto">
-                  {project.tags.map((tag, j) => (
-                    <li key={j} className="font-mono text-[10px] bg-slate-100 dark:bg-white/[0.05] text-slate-700 dark:text-slate-300 px-2 py-0.5 rounded-sm border border-slate-200 dark:border-white/[0.05]">
-                      {tag}
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
+            {shown.map((project) => (
+              <ProjectCard key={project.title} project={project} />
             ))}
           </div>
-          {filtered.length === 0 && (
-            <p className="text-center text-slate-500 py-12">No projects match this filter.</p>
-          )}
         </div>
       </motion.div>
-    </motion.div>
-  );
-};
-
-// --- CONTACT BUTTON (with Gmail web fallback) ---
-const ContactButton = ({ className = "", children, icon }) => {
-  const [open, setOpen] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const email = DATA.email;
-  const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${email}`;
-  const mailtoUrl = `mailto:${email}`;
-
-  const copyEmail = async () => {
-    try {
-      await navigator.clipboard.writeText(email);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (e) {
-      // ignore
-    }
-  };
-
-  return (
-    <div className="relative inline-block">
-      <button
-        onClick={() => setOpen(!open)}
-        className={className}
-      >
-        {icon}
-        {children}
-      </button>
-
-      {open && (
-        <>
-          <div className="fixed inset-0 z-40 cursor-pointer" onClick={() => setOpen(false)} />
-          <motion.div
-            initial={{ opacity: 0, y: -8, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            className="absolute left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:right-0 top-full mt-2 z-50 w-64 bg-white dark:bg-[#0a0820] border border-slate-200 dark:border-white/10 rounded-xl p-2 shadow-2xl text-left"
-          >
-            <a
-              href={gmailUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => setOpen(false)}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 transition-colors text-sm"
-            >
-              <Mail className="w-4 h-4 text-primary" />
-              <div className="flex flex-col">
-                <span className="font-medium text-slate-900 dark:text-white">Open in Gmail</span>
-                <span className="text-xs text-slate-500">Web app — works everywhere</span>
-              </div>
-            </a>
-            <a
-              href={mailtoUrl}
-              onClick={() => setOpen(false)}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 transition-colors text-sm"
-            >
-              <Mail className="w-4 h-4 text-secondary" />
-              <div className="flex flex-col">
-                <span className="font-medium text-slate-900 dark:text-white">Default Mail App</span>
-                <span className="text-xs text-slate-500">Opens your setup mail client</span>
-              </div>
-            </a>
-            <button
-              onClick={copyEmail}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 transition-colors text-sm"
-            >
-              {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4 text-accent" />}
-              <div className="flex flex-col items-start">
-                <span className="font-medium text-slate-900 dark:text-white">{copied ? 'Copied!' : 'Copy Email'}</span>
-                <span className="text-xs text-slate-500">{email}</span>
-              </div>
-            </button>
-          </motion.div>
-        </>
-      )}
     </div>
   );
 };
 
-const SectionHeading = ({ children }) => (
-  <motion.div 
-    initial="hidden"
-    whileInView="visible"
-    viewport={{ once: true, margin: "-100px" }}
-    variants={fadeInUp}
-    className="flex items-center gap-4 mb-16"
-  >
-    <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 flex items-center tracking-tight">
-      {children}
-    </h2>
-    <div className="h-px bg-slate-300 dark:bg-white/[0.1] flex-grow max-w-[200px] md:max-w-md"></div>
-  </motion.div>
-);
-
-const PhoneContact = ({ phone }) => {
-  const [copied, setCopied] = useState(false);
-
-  const handleClick = (e) => {
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    if (isMobile) {
-      return;
-    } else {
-      e.preventDefault();
-      navigator.clipboard.writeText(phone).then(() => {
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      });
-    }
-  };
+const Projects = () => {
+  const [open, setOpen] = useState(false);
+  const featured = DATA.projects.filter((p) => p.featured);
 
   return (
-    <a 
-      href={`tel:${phone.replace(/[^0-9+]/g, '')}`}
-      onClick={handleClick}
-      className="flex items-center gap-2 hover:text-primary transition-colors cursor-pointer relative group"
-    >
-      <Phone className="w-4 h-4" /> 
-      {copied ? "Copied!" : phone}
-      <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 dark:bg-white text-white dark:text-black font-semibold text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity hidden md:block pointer-events-none whitespace-nowrap shadow-md">
-        {copied ? "Copied!" : "Click to copy"}
-      </span>
-    </a>
+    <section id="projects" className="section">
+      <SectionHeader eyebrow="Projects" title="Things I've built">
+        A few favourites from my undergraduate years. The full list has all 24.
+      </SectionHeader>
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {featured.map((project, i) => (
+          <Reveal key={project.title} delay={(i % 3) * 0.05} className="h-full">
+            <ProjectCard project={project} />
+          </Reveal>
+        ))}
+      </div>
+      <Reveal className="mt-10">
+        <button onClick={() => setOpen(true)} className="btn-secondary">
+          See all {DATA.projects.length} projects <ArrowRight className="w-4 h-4" />
+        </button>
+      </Reveal>
+      {open && <ProjectsModal onClose={() => setOpen(false)} />}
+    </section>
+  );
+};
+
+// --- SKILLS & EDUCATION ---
+const Skills = () => {
+  const [showHardware, setShowHardware] = useState(false);
+
+  return (
+    <section id="skills" className="section">
+      <SectionHeader eyebrow="Skills" title="Tools I work with" />
+      <Reveal>
+        <dl className="divide-y divide-line border-y border-line">
+          {DATA.skills.map((group) => (
+            <div key={group.category} className="grid md:grid-cols-[16rem_1fr] gap-2 md:gap-10 py-5">
+              <dt className="text-sm font-medium text-ink">{group.category}</dt>
+              <dd className="text-[15px] text-muted leading-relaxed">{group.items.join(' · ')}</dd>
+            </div>
+          ))}
+          <div className="py-5">
+            <button
+              onClick={() => setShowHardware(!showHardware)}
+              className="w-full grid md:grid-cols-[16rem_1fr] gap-2 md:gap-10 text-left group"
+              aria-expanded={showHardware}
+            >
+              <span className="text-sm font-medium text-ink">Hardware I've used</span>
+              <span className="text-[15px] text-muted inline-flex items-center gap-1.5 group-hover:text-ink transition-colors">
+                {showHardware ? 'Hide' : 'Show'} sensors, modules and drivers
+                <ChevronDown className={`w-4 h-4 transition-transform ${showHardware ? 'rotate-180' : ''}`} />
+              </span>
+            </button>
+            {showHardware && (
+              <div className="mt-5 grid sm:grid-cols-2 gap-x-10 gap-y-5 md:pl-[18.5rem]">
+                {DATA.hardware.map((group) => (
+                  <div key={group.name}>
+                    <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-faint">{group.name}</p>
+                    <p className="mt-1.5 text-sm text-muted leading-relaxed">{group.items.join(', ')}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </dl>
+      </Reveal>
+
+      <div className="mt-20 grid lg:grid-cols-2 gap-12 lg:gap-16">
+        <Reveal>
+          <h3 className="text-xl font-semibold text-ink mb-6">Education</h3>
+          <ul className="space-y-6">
+            {DATA.education.map((edu) => (
+              <li key={edu.degree}>
+                <div className="flex flex-wrap items-baseline justify-between gap-x-4">
+                  <p className="font-medium text-ink">{edu.institution}</p>
+                  <p className="font-mono text-xs text-faint">{edu.date}</p>
+                </div>
+                <p className="text-sm text-muted mt-0.5">{edu.degree}</p>
+                {edu.details && <p className="text-sm text-muted mt-2 leading-relaxed">{edu.details}</p>}
+              </li>
+            ))}
+          </ul>
+        </Reveal>
+        <Reveal delay={0.05}>
+          <h3 className="text-xl font-semibold text-ink mb-6">Honors</h3>
+          <ul className="space-y-4">
+            {DATA.honors.map((h) => (
+              <li key={h.title} className="flex items-baseline justify-between gap-4">
+                <p className="text-sm text-muted leading-relaxed">{h.title}</p>
+                <p className="font-mono text-xs text-faint shrink-0">{h.date}</p>
+              </li>
+            ))}
+          </ul>
+        </Reveal>
+      </div>
+    </section>
+  );
+};
+
+// --- CONTACT ---
+const Contact = () => {
+  const [copied, copy] = useCopy();
+  const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${DATA.email}`;
+
+  return (
+    <section id="contact" className="section">
+      <Reveal className="max-w-2xl">
+        <p className="eyebrow">Contact</p>
+        <h2 className="section-title">Let's talk</h2>
+        <p className="mt-4 text-lg text-muted leading-relaxed">
+          If you're working on embedded hardware, robotics or a research project and think I could help, send me an email.
+        </p>
+
+        <div className="mt-8 flex flex-wrap items-center gap-3">
+          <a href={`mailto:${DATA.email}`} className="btn-primary">
+            <Mail className="w-4 h-4" /> {DATA.email}
+          </a>
+          <button onClick={() => copy(DATA.email)} className="btn-secondary" aria-live="polite">
+            {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
+            {copied ? 'Copied' : 'Copy email'}
+          </button>
+          <ExternalLink href={gmailUrl} className="text-sm link ml-1">
+            Open in Gmail
+          </ExternalLink>
+        </div>
+
+        <ul className="mt-10 grid sm:grid-cols-2 gap-4 text-sm text-muted">
+          <li className="flex items-center gap-2.5">
+            <Phone className="w-4 h-4 text-faint" />
+            <a href={`tel:${DATA.phone.replace(/[^0-9+]/g, '')}`} className="hover:text-ink transition-colors">{DATA.phone}</a>
+          </li>
+          <li className="flex items-center gap-2.5">
+            <MapPin className="w-4 h-4 text-faint" /> {DATA.location}
+          </li>
+          <li className="flex items-center gap-2.5">
+            <Linkedin className="w-4 h-4 text-faint" />
+            <ExternalLink href={DATA.socials.linkedin} className="hover:text-ink transition-colors">LinkedIn</ExternalLink>
+          </li>
+          <li className="flex items-center gap-2.5">
+            <Github className="w-4 h-4 text-faint" />
+            <ExternalLink href={DATA.socials.github} className="hover:text-ink transition-colors">GitHub</ExternalLink>
+          </li>
+        </ul>
+      </Reveal>
+    </section>
   );
 };
 
 // --- MAIN APP COMPONENT ---
 const App = () => {
-  const [activeSection, setActiveSection] = useState('home');
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [theme, setTheme] = useState('dark');
-  const [projectsModalOpen, setProjectsModalOpen] = useState(false);
-
-  // Handle Theme switching
-  useEffect(() => {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [theme]);
-
-  // Progress bar
-  const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-    restDelta: 0.001
-  });
-
-  // Track active section for nav
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-      const sections = ['home', 'about', 'experience', 'publications', 'projects', 'contact'];
-      for (const section of sections.reverse()) {
-        const element = document.getElementById(section);
-        if (element && window.scrollY >= element.offsetTop - 200) {
-          setActiveSection(section);
-          break;
-        }
-      }
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const scrollTo = (id) => {
-    const element = document.getElementById(id);
-    if (element) {
-      window.scrollTo({
-        top: element.offsetTop - 80,
-        behavior: 'smooth'
-      });
-    }
-  };
-
-  const toggleTheme = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark');
-  };
+  const [theme, toggleTheme] = useTheme();
 
   return (
-    <div className="relative">
-      {/* Scroll Progress Bar */}
-      <motion.div
-        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-secondary to-accent origin-left z-[100]"
-        style={{ scaleX }}
-      />
+    <>
+      <a href="#about" className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[200] btn-primary">
+        Skip to content
+      </a>
+      <Nav theme={theme} toggleTheme={toggleTheme} />
 
-      {/* Sleek Professional Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute inset-0 bg-slate-50 dark:bg-[#040211]"></div>
-        {/* Very subtle elegant glow */}
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-slate-300/20 dark:bg-white/[0.02] rounded-full blur-[120px] opacity-50"></div>
-        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-slate-300/20 dark:bg-white/[0.02] rounded-full blur-[120px] opacity-50"></div>
-        {/* Minimalist dot grid */}
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMTQ4LDE2MywxODQsMC4wNSkiLz48L3N2Zz4=')] dark:bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wMykiLz48L3N2Zz4=')] [mask-image:linear-gradient(to_bottom,white,transparent,white)] z-0 pointer-events-none"></div>
-      </div>
-
-      {/* Navigation */}
-      <nav className={`fixed w-full z-50 transition-all duration-500 ${isScrolled ? 'bg-white/70 dark:bg-[#040211]/70 backdrop-blur-2xl border-b border-white/20 dark:border-white/10 py-3 shadow-[0_4px_30px_rgba(0,0,0,0.1)] dark:shadow-[0_4px_30px_rgba(0,0,0,0.3)]' : 'bg-transparent py-8'}`}>
-        <div className="max-w-6xl mx-auto px-6 flex justify-between items-center">
-          <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="font-mono text-xl font-bold tracking-tighter cursor-pointer z-50 group" 
-            onClick={() => scrollTo('home')}
-          >
-            <span className="text-slate-900 dark:text-white group-hover:text-primary transition-colors">MH</span>
-            <span className="text-primary group-hover:text-secondary transition-colors">.</span>
-          </motion.div>
-          
-          <div className="hidden md:flex gap-8 items-center font-mono text-sm">
-            {['About', 'Experience', 'Publications', 'Projects', 'Contact'].map((item, i) => (
-              <motion.button 
-                key={item} 
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-                onClick={() => scrollTo(item.toLowerCase())}
-                className={`nav-link flex items-center ${activeSection === item.toLowerCase() ? 'active font-semibold' : ''}`}
-              >
-                {item}
-              </motion.button>
-            ))}
-            
-            <motion.button
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.4 }}
-              onClick={toggleTheme}
-              className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-white/10 transition-colors"
-              aria-label="Toggle Theme"
-            >
-              {theme === 'dark' ? <Sun className="w-5 h-5 text-amber-300" /> : <Moon className="w-5 h-5 text-slate-700" />}
-            </motion.button>
-
-          </div>
-
-          {/* Mobile: 3-dot More menu */}
-          <div className="md:hidden flex items-center gap-2 z-50">
-            <motion.button
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.4 }}
-              onClick={toggleTheme}
-              className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-white/10 transition-colors"
-              aria-label="Toggle Theme"
-            >
-              {theme === 'dark' ? <Sun className="w-5 h-5 text-amber-300" /> : <Moon className="w-5 h-5 text-slate-700" />}
-            </motion.button>
-            <MobileMoreMenu scrollTo={scrollTo} activeSection={activeSection} />
-          </div>
-        </div>
-      </nav>
-
-      {/* Fixed Socials Left Sidebar */}
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1, duration: 1 }}
-        className="hidden md:flex fixed bottom-0 left-10 flex-col items-center gap-6 z-40 after:content-[''] after:w-[1px] after:h-24 after:bg-slate-300 dark:after:bg-slate-600"
-      >
-        <a href={DATA.socials.github} target="_blank" rel="noopener noreferrer" className="text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-primary hover:-translate-y-1 transition-all p-2"><Github className="w-5 h-5" /></a>
-        <a href={DATA.socials.linkedin} target="_blank" rel="noopener noreferrer" className="text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-primary hover:-translate-y-1 transition-all p-2"><Linkedin className="w-5 h-5" /></a>
-        <a href={DATA.socials.youtube} target="_blank" rel="noopener noreferrer" className="text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-primary hover:-translate-y-1 transition-all p-2"><Youtube className="w-5 h-5" /></a>
-      </motion.div>
-
-      {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-6 sm:px-12 md:px-24 relative z-20">
-        
-        {/* HERO SECTION */}
-        <section id="home" className="min-h-screen flex flex-col md:flex-row justify-center items-center pt-20 gap-12 lg:gap-24">
-          <div className="flex-1 max-w-2xl">
-            <motion.h1 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="text-5xl sm:text-6xl md:text-7xl lg:text-[6.5rem] font-black text-slate-900 dark:text-white tracking-tighter mb-4 leading-none"
-            >
-              {DATA.name}
-            </motion.h1>
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="mb-10 flex flex-col gap-2"
-            >
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold text-slate-700 dark:text-slate-300 tracking-tight">
-                Embedded System Engineer
-              </h2>
-              <h3 className="text-xl sm:text-2xl md:text-3xl font-medium text-slate-500 dark:text-slate-400 flex items-center gap-2">
-                <span className="text-primary font-bold">@</span> Frontier Semiconductor
-              </h3>
-            </motion.div>
-            
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="flex flex-wrap gap-4"
-            >
-              <button onClick={() => scrollTo('projects')} className="bg-primary hover:bg-primary/90 text-white px-8 py-4 rounded-lg font-semibold flex items-center gap-2 transition-all shadow-[0_4px_14px_0_rgba(139,92,246,0.39)] hover:shadow-[0_6px_20px_rgba(139,92,246,0.23)] hover:-translate-y-0.5">
-                Explore Projects <ChevronRight className="w-4 h-4" />
-              </button>
-              <ContactButton
-                className="relative px-8 py-4 rounded-lg font-semibold border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all flex items-center gap-2 shadow-sm hover:shadow-md hover:-translate-y-0.5"
-                icon={<Mail className="w-4 h-4" />}
-              >
-                Let's Talk
-              </ContactButton>
-            </motion.div>
-
-            {/* Mobile Socials */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              className="flex md:hidden items-center justify-center w-full gap-6 mt-10 mb-4"
-            >
-              <a href={DATA.socials.github} target="_blank" rel="noopener noreferrer" className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors p-3 bg-slate-100 dark:bg-white/5 rounded-full shadow-sm"><Github className="w-5 h-5" /></a>
-              <a href={DATA.socials.linkedin} target="_blank" rel="noopener noreferrer" className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors p-3 bg-slate-100 dark:bg-white/5 rounded-full shadow-sm"><Linkedin className="w-5 h-5" /></a>
-              <a href={DATA.socials.youtube} target="_blank" rel="noopener noreferrer" className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors p-3 bg-slate-100 dark:bg-white/5 rounded-full shadow-sm"><Youtube className="w-5 h-5" /></a>
-            </motion.div>
-          </div>
-          
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.5, duration: 0.8, ease: "easeOut" }}
-            className="flex-shrink-0 relative group mt-8 md:mt-0"
-          >
-            {/* Subtle vibrant glow */}
-            <div className="absolute inset-0 bg-primary/20 dark:bg-primary/30 blur-[60px] rounded-full scale-110 opacity-50 group-hover:opacity-80 transition-opacity duration-700 pointer-events-none z-0"></div>
-            <div className="relative w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 rounded-full overflow-hidden border-[6px] border-white dark:border-[#0f172a] shadow-2xl z-10 bg-slate-100 dark:bg-slate-900 transition-transform duration-500 group-hover:scale-[1.03]">
-              <img 
-                src="/profile.jpeg" 
-                alt={DATA.name}
-                className="w-full h-full object-cover mix-blend-normal transition-transform duration-700 group-hover:scale-105"
-                onError={(e) => { 
-                  e.target.onerror = null; 
-                  e.target.src = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?fit=crop&w=400&h=400"; // Fallback placeholder
-                }}
-              />
-            </div>
-          </motion.div>
-        </section>
-
-        <section id="about" className="py-20">
-          <SectionHeading>About Me</SectionHeading>
-          <motion.div 
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeInUp}
-            className="mb-16"
-          >
-            <p className="text-slate-600 dark:text-slate-400 text-lg leading-relaxed max-w-4xl">{DATA.about}</p>
-          </motion.div>
-
-          <div className="grid lg:grid-cols-2 gap-12 items-start">
-            {/* Left Column: Academics & Achievements */}
-            <div className="space-y-12">
-              <div className="space-y-6">
-                <div className="flex items-center gap-3 text-slate-900 dark:text-white font-bold text-xl mb-4">
-                  <GraduationCap className="text-primary w-6 h-6" /> Academic Background
-                </div>
-                {DATA.education.map((edu, i) => (
-                  <div key={i} className="glass-card p-6 rounded-xl relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-bl-full blur-[20px] transition-all group-hover:bg-primary/20"></div>
-                    <h4 className="text-slate-900 dark:text-white font-bold text-lg">{edu.degree}</h4>
-                    <p className="font-mono text-secondary text-sm mb-2 mt-1 underline decoration-primary/30 underline-offset-4 leading-relaxed">{edu.institution} &middot; {edu.date}</p>
-                    {edu.details && <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{edu.details}</p>}
-                  </div>
-                ))}
-              </div>
-
-              <div className="space-y-6">
-                <div className="flex items-center gap-3 text-slate-900 dark:text-white font-bold text-xl mb-4">
-                  <Award className="text-secondary w-6 h-6" /> Honors & Awards
-                </div>
-                <div className="glass-panel p-8 rounded-3xl">
-                  <ul className="space-y-4">
-                    {DATA.honors.map((item, i) => (
-                      <li key={i} className="flex items-start gap-3 text-slate-600 dark:text-slate-400 group">
-                        <ChevronRight className="w-5 h-5 text-secondary shrink-0 mt-0.5 group-hover:translate-x-1 transition-transform" />
-                        <span className="leading-relaxed font-medium">{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-
-              <div className="space-y-6">
-                <div className="flex items-center gap-3 text-slate-900 dark:text-white font-bold text-xl mb-4">
-                  <Briefcase className="text-primary w-6 h-6" /> Sourcing & Logistics
-                </div>
-                <div className="glass-panel p-8 rounded-3xl">
-                  <ul className="space-y-4">
-                    {DATA.logistics.map((item, i) => (
-                      <li key={i} className="flex flex-col text-slate-600 dark:text-slate-400">
-                        <span className="font-mono text-[10px] text-primary mb-1 uppercase tracking-widest">Strategy {i+1}</span>
-                        <span className="leading-relaxed text-sm">{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </div>
-            
-            {/* Right Column: Skills */}
-            <div className="space-y-12">
-              <div className="space-y-6">
-                <div className="flex items-center gap-3 text-slate-900 dark:text-white font-bold text-xl mb-4">
-                  <Cpu className="text-accent w-6 h-6" /> Technical Arsenal
-                </div>
-                <div className="grid gap-4">
-                  {DATA.skills.map((skillGroup, i) => (
-                    <SkillCard key={i} skillGroup={skillGroup} />
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* EXPERIENCE SECTION */}
-        <section id="experience" className="py-20 relative">
-          <SectionHeading>Experience</SectionHeading>
-          
-          {/* Work Experience */}
-          <div className="mb-16 relative">
-            <div className="absolute left-[39px] md:left-[51px] top-14 bottom-0 w-px bg-gradient-to-b from-primary/50 via-primary/20 to-transparent hidden sm:block"></div>
-            <div className="flex items-center gap-3 text-slate-900 dark:text-white font-bold text-xl md:text-2xl mb-8">
-              <Briefcase className="text-primary w-6 h-6" />
-              <span>Work Experience</span>
-              <span className="font-mono text-xs font-normal text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 px-2.5 py-0.5 rounded-full ml-2 hidden sm:inline-block">Industry & Engineering</span>
-            </div>
-
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-50px" }}
-              variants={staggerContainer}
-              className="space-y-6 max-w-4xl relative"
-            >
-              {(DATA.workExperience || DATA.experience.slice(0, 2)).map((exp, i) => {
-                const isCurrent = i === 0;
-                return (
-                  <motion.div key={i} variants={fadeInUp} className="relative pl-0 sm:pl-12 md:pl-16 group">
-                    <div className="hidden sm:flex absolute left-0 top-8 w-8 h-8 rounded-full bg-slate-100 dark:bg-[#040211] border-4 border-slate-200 dark:border-white/10 items-center justify-center z-10 group-hover:border-primary group-hover:scale-110 transition-all duration-500 shadow-xl group-hover:shadow-[0_0_20px_rgba(139,92,246,0.4)]">
-                      <div className={`w-2 h-2 rounded-full transition-colors duration-500 ${isCurrent ? 'bg-primary animate-pulse' : 'bg-slate-300 dark:bg-slate-600 group-hover:bg-primary'}`}></div>
-                    </div>
-                    <details className="glass-card rounded-3xl relative group border-t-4 border-t-transparent hover:border-t-primary transition-all duration-500 hover:-translate-y-1" open={isCurrent}>
-                      <summary className="list-none cursor-pointer p-6 md:p-8 select-none">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 flex-wrap mb-1">
-                              <h3 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-primary group-hover:to-secondary transition-all duration-300">
-                                {exp.title}
-                              </h3>
-                              {isCurrent && (
-                                <span className="font-mono text-[10px] text-green-600 dark:text-green-400 bg-green-500/10 border border-green-500/20 px-2 py-0.5 rounded-full uppercase tracking-wider">
-                                  Current
-                                </span>
-                              )}
-                            </div>
-                            <h4 className="text-slate-600 dark:text-slate-400 text-base md:text-lg font-medium">
-                              {exp.link ? (
-                                <a href={exp.link} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors inline-flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                                  {exp.company} <ExternalLink className="w-4 h-4" />
-                                </a>
-                              ) : (
-                                exp.company
-                              )}
-                            </h4>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <span className="font-mono text-xs md:text-sm text-primary bg-primary/10 border border-primary/20 px-3 py-1 md:px-4 md:py-1.5 rounded-full whitespace-nowrap font-medium shadow-sm">{exp.date}</span>
-                            <ChevronRight className="w-5 h-5 text-slate-400 transition-transform group-open:rotate-90" />
-                          </div>
-                        </div>
-                      </summary>
-                      <div className="px-6 md:px-8 pb-6 md:pb-8 pt-2 border-t border-slate-200 dark:border-white/5">
-                        <ul className="space-y-3">
-                          {exp.points.map((point, j) => (
-                            <li key={j} className="flex items-start gap-4 text-slate-600 dark:text-slate-400 group/item">
-                              <ChevronRight className="w-5 h-5 text-primary/50 shrink-0 mt-0.5 group-hover/item:text-primary group-hover/item:translate-x-1 transition-all" />
-                              <span className="leading-relaxed text-sm md:text-base">{point}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </details>
-                  </motion.div>
-                );
-              })}
-            </motion.div>
-          </div>
-
-          {/* Management Experience (University Club Activities & Leadership) */}
-          <div className="relative">
-            <div className="absolute left-[39px] md:left-[51px] top-14 bottom-0 w-px bg-gradient-to-b from-secondary/50 via-secondary/20 to-transparent hidden sm:block"></div>
-            <div className="flex items-center gap-3 text-slate-900 dark:text-white font-bold text-xl md:text-2xl mb-8">
-              <Award className="text-secondary w-6 h-6" />
-              <span>Management Experience</span>
-              <span className="font-mono text-xs font-normal text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 px-2.5 py-0.5 rounded-full ml-2 hidden sm:inline-block">University Club Activities & Leadership</span>
-            </div>
-
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-50px" }}
-              variants={staggerContainer}
-              className="space-y-6 max-w-4xl relative"
-            >
-              {(DATA.managementExperience || DATA.experience.slice(2)).map((exp, i) => {
-                const isFirst = i === 0;
-                return (
-                  <motion.div key={i} variants={fadeInUp} className="relative pl-0 sm:pl-12 md:pl-16 group">
-                    <div className="hidden sm:flex absolute left-0 top-8 w-8 h-8 rounded-full bg-slate-100 dark:bg-[#040211] border-4 border-slate-200 dark:border-white/10 items-center justify-center z-10 group-hover:border-secondary group-hover:scale-110 transition-all duration-500 shadow-xl group-hover:shadow-[0_0_20px_rgba(59,130,246,0.4)]">
-                      <div className={`w-2 h-2 rounded-full transition-colors duration-500 ${isFirst ? 'bg-secondary animate-pulse' : 'bg-slate-300 dark:bg-slate-600 group-hover:bg-secondary'}`}></div>
-                    </div>
-                    <details className="glass-card rounded-3xl relative group border-t-4 border-t-transparent hover:border-t-secondary transition-all duration-500 hover:-translate-y-1" open={isFirst}>
-                      <summary className="list-none cursor-pointer p-6 md:p-8 select-none">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                          <div className="flex-1">
-                            <h3 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-secondary group-hover:to-accent transition-all duration-300 mb-1">
-                              {exp.title}
-                            </h3>
-                            <h4 className="text-slate-600 dark:text-slate-400 text-base md:text-lg font-medium">
-                              {exp.link ? (
-                                <a href={exp.link} target="_blank" rel="noopener noreferrer" className="hover:text-secondary transition-colors inline-flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                                  {exp.company} <ExternalLink className="w-4 h-4" />
-                                </a>
-                              ) : (
-                                exp.company
-                              )}
-                            </h4>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <span className="font-mono text-xs md:text-sm text-secondary bg-secondary/10 border border-secondary/20 px-3 py-1 md:px-4 md:py-1.5 rounded-full whitespace-nowrap font-medium shadow-sm">{exp.date}</span>
-                            <ChevronRight className="w-5 h-5 text-slate-400 transition-transform group-open:rotate-90" />
-                          </div>
-                        </div>
-                      </summary>
-                      <div className="px-6 md:px-8 pb-6 md:pb-8 pt-2 border-t border-slate-200 dark:border-white/5">
-                        <ul className="space-y-3">
-                          {exp.points.map((point, j) => (
-                            <li key={j} className="flex items-start gap-4 text-slate-600 dark:text-slate-400 group/item">
-                              <ChevronRight className="w-5 h-5 text-secondary/50 shrink-0 mt-0.5 group-hover/item:text-secondary group-hover/item:translate-x-1 transition-all" />
-                              <span className="leading-relaxed text-sm md:text-base">{point}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </details>
-                  </motion.div>
-                );
-              })}
-            </motion.div>
-          </div>
-        </section>
-
-        {/* PUBLICATIONS & RESEARCH SECTION */}
-        <section id="publications" className="py-20 relative">
-          <SectionHeading>Publications & Research</SectionHeading>
-          
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-50px" }}
-            variants={staggerContainer}
-            className="space-y-8 max-w-4xl"
-          >
-            {/* Peer-Reviewed Journal Publication */}
-            {DATA.publications && DATA.publications.map((pub, i) => (
-              <motion.div
-                key={i}
-                variants={fadeInUp}
-                className="glass-card p-6 md:p-8 rounded-3xl relative overflow-hidden group border-t-4 border-t-primary/70 hover:border-t-primary transition-all duration-500 shadow-xl"
-              >
-                <div className="absolute top-0 right-0 w-48 h-48 bg-primary/10 rounded-bl-full blur-[30px] group-hover:bg-primary/20 transition-all pointer-events-none"></div>
-                
-                <div className="flex flex-wrap items-center gap-2 mb-3">
-                  <span className="font-mono text-xs font-semibold text-primary bg-primary/10 border border-primary/25 px-3 py-1 rounded-full uppercase tracking-wider">
-                    Peer-Reviewed Journal
-                  </span>
-                  <span className="font-mono text-xs font-semibold text-green-600 dark:text-green-400 bg-green-500/10 border border-green-500/25 px-2.5 py-1 rounded-full">
-                    Elsevier Q1
-                  </span>
-                  <span className="font-mono text-xs text-slate-500 dark:text-slate-400 ml-auto">
-                    {pub.date}
-                  </span>
-                </div>
-
-                <h3 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white leading-snug mb-3 group-hover:text-primary transition-colors">
-                  {pub.title}
-                </h3>
-
-                <p className="font-mono text-xs md:text-sm text-secondary mb-3 font-medium">
-                  {pub.journal} &middot; {pub.volume}
-                </p>
-
-                <p className="text-xs text-slate-500 dark:text-slate-400 mb-4 leading-relaxed line-clamp-2">
-                  <span className="font-semibold text-slate-700 dark:text-slate-300">Authors:</span> {pub.authors}
-                </p>
-
-                <div className="bg-slate-50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/5 rounded-2xl p-4 md:p-5 mb-6">
-                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-                    <span className="font-semibold text-primary font-mono text-xs uppercase tracking-wider block mb-1">Key Focus</span>
-                    {pub.focus}
-                  </p>
-                </div>
-
-                <div className="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-slate-200 dark:border-white/5">
-                  <ul className="flex flex-wrap gap-1.5">
-                    {pub.tags.map((tag, j) => (
-                      <li key={j} className="font-mono text-[10px] bg-slate-100 dark:bg-white/[0.05] text-slate-700 dark:text-slate-300 px-2.5 py-1 rounded-md border border-slate-200 dark:border-white/[0.05]">
-                        {tag}
-                      </li>
-                    ))}
-                  </ul>
-
-                  <div className="flex items-center gap-3">
-                    {pub.doi && (
-                      <a
-                        href={pub.doi}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold text-primary hover:text-primary/80 transition-colors bg-primary/10 hover:bg-primary/20 px-3 py-1.5 rounded-lg border border-primary/20"
-                      >
-                        DOI <ExternalLink className="w-3.5 h-3.5" />
-                      </a>
-                    )}
-                    {pub.scienceDirect && (
-                      <a
-                        href={pub.scienceDirect}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold text-secondary hover:text-secondary/80 transition-colors bg-secondary/10 hover:bg-secondary/20 px-3 py-1.5 rounded-lg border border-secondary/20"
-                      >
-                        ScienceDirect <ExternalLink className="w-3.5 h-3.5" />
-                      </a>
-                    )}
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-
-            {/* B.Sc. Thesis */}
-            {DATA.thesis && (
-              <motion.div
-                variants={fadeInUp}
-                className="glass-card p-6 md:p-8 rounded-3xl relative overflow-hidden group border-t-4 border-t-secondary/70 hover:border-t-secondary transition-all duration-500 shadow-xl"
-              >
-                <div className="flex flex-wrap items-center gap-2 mb-3">
-                  <span className="font-mono text-xs font-semibold text-secondary bg-secondary/10 border border-secondary/25 px-3 py-1 rounded-full uppercase tracking-wider">
-                    {DATA.thesis.role}
-                  </span>
-                </div>
-
-                <h3 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white leading-snug mb-2 group-hover:text-secondary transition-colors">
-                  {DATA.thesis.title}
-                </h3>
-
-                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed mb-6">
-                  {DATA.thesis.description}
-                </p>
-
-                <ul className="flex flex-wrap gap-1.5 pt-2 border-t border-slate-200 dark:border-white/5">
-                  {DATA.thesis.tags.map((tag, j) => (
-                    <li key={j} className="font-mono text-[10px] bg-slate-100 dark:bg-white/[0.05] text-slate-700 dark:text-slate-300 px-2.5 py-1 rounded-md border border-slate-200 dark:border-white/[0.05]">
-                      {tag}
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
-            )}
-          </motion.div>
-        </section>
-
-        {/* EXTENSIVE PROJECTS SECTION */}
-        <section id="projects" className="py-20">
-          <SectionHeading>Undergrad Projects</SectionHeading>
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "100px" }}
-            variants={staggerContainer}
-            className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5"
-          >
-            {DATA.projects.slice(0, 6).map((project, i) => (
-              <motion.div key={i} variants={fadeInUp} className="glass-card p-6 rounded-2xl flex flex-col h-full group relative overflow-hidden pointer-events-auto">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 rounded-2xl pointer-events-none"></div>
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors mb-3 pr-8 leading-tight">{project.title}</h3>
-                <p className="text-slate-600 dark:text-slate-400 text-xs sm:text-sm mb-6 flex-grow leading-relaxed">{project.description}</p>
-                <ul className="flex flex-wrap gap-1.5 mt-auto">
-                  {project.tags.slice(0, 4).map((tag, j) => (
-                    <li key={j} className="font-mono text-[10px] bg-slate-100 dark:bg-white/[0.05] text-slate-700 dark:text-slate-300 px-2 py-1 rounded-sm border border-slate-200 dark:border-white/[0.05]">{tag}</li>
-                  ))}
-                </ul>
-              </motion.div>
-            ))}
-          </motion.div>
-
-          {DATA.projects.length > 6 && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="flex justify-center mt-12"
-            >
-              <button
-                onClick={() => setProjectsModalOpen(true)}
-                className="group inline-flex items-center gap-2 px-8 py-3 rounded-full border border-slate-300 dark:border-white/10 bg-white/50 dark:bg-white/[0.03] hover:bg-primary hover:border-primary hover:text-white text-slate-700 dark:text-slate-300 font-mono text-sm transition-all duration-300 hover:-translate-y-0.5 shadow-sm hover:shadow-lg"
-              >
-                View All Projects
-                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </button>
-            </motion.div>
-          )}
-        </section>
-
-
-
-        {/* CONTACT SECTION */}
-        <section id="contact" className="pt-28 pb-48 flex flex-col items-center justify-center text-center relative z-20">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent blur-[100px] z-0 pointer-events-none"
-          ></motion.div>
-          
-          <div className="relative z-10 w-full max-w-2xl">
-            <p className="font-mono text-primary mb-4 font-medium uppercase tracking-widest text-xs">What's Next?</p>
-            <h2 className="text-5xl md:text-7xl font-black text-slate-900 dark:text-white mb-8 tracking-tight">Get In Touch</h2>
-            <div className="flex flex-col gap-3 items-center mb-10 text-slate-600 dark:text-slate-400 font-mono text-sm">
-              <div className="flex items-center gap-2 hover:text-primary transition-colors">
-                <Mail className="w-4 h-4" /> {DATA.email}
-              </div>
-              <PhoneContact phone={DATA.phone} />
-              <div className="flex items-center gap-2 hover:text-primary transition-colors">
-                <Terminal className="w-4 h-4" /> {DATA.location}
-              </div>
-            </div>
-
-            <ContactButton
-              className="relative inline-flex items-center gap-3 bg-slate-900 dark:bg-white text-white dark:text-black font-bold px-10 py-5 rounded-full hover:bg-primary dark:hover:bg-primary hover:text-white dark:hover:text-white transition-all duration-300 hover:scale-105 shadow-[0_0_20px_rgba(139,92,246,0.15)] dark:shadow-[0_0_40px_rgba(139,92,246,0.3)]"
-              icon={<Mail className="w-5 h-5" />}
-            >
-              Let's Talk
-            </ContactButton>
-          </div>
-        </section>
+      <main className="max-w-site mx-auto px-5 sm:px-8">
+        <Hero />
+        <About />
+        <Experience />
+        <Research />
+        <Projects />
+        <Skills />
+        <Contact />
       </main>
 
-      {/* FOOTER */}
-      <footer className="py-8 text-center font-mono text-sm text-slate-500 border-t border-slate-200 dark:border-white/[0.05] relative z-10 w-full transition-colors duration-500">
-        <p className="hover:text-primary transition-colors mb-2 cursor-pointer">Copyright Miraz Hossain 2026</p>
+      <footer className="border-t border-line">
+        <div className="max-w-site mx-auto px-5 sm:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-faint">
+          <p>© {new Date().getFullYear()} Miraz Hossain</p>
+          <SocialLinks />
+        </div>
       </footer>
-
-      {/* ALL PROJECTS MODAL */}
-      <ProjectsModal open={projectsModalOpen} onClose={() => setProjectsModalOpen(false)} />
-    </div>
+    </>
   );
 };
 
