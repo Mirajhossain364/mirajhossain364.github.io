@@ -21,6 +21,25 @@ export const DATA = {
     "I also know the practical side of getting a product made. I've sourced parts from Dhaka's electronics markets (Jonson Road, Nawabpur, Patuatoli, Wari) and from suppliers like DigiKey, JLCPCB, Alibaba and AliExpress. I've negotiated prices with Chinese vendors and put together R&D budgets for product development.",
   ],
 
+  story: {
+    title: "My story",
+    description: "A short animated film about my journey so far: growing up in Bangladesh, school in Pabna, college in Dhaka and studying engineering at AUST.",
+    video: "/story.mp4",
+    poster: "/story-poster.jpg",
+    credit: "Made with Steve AI",
+    // Skip the blank first frame and the tool's logo outro (from 3:54)
+    startAt: 0.1,
+    endAt: 234,
+    chapters: [
+      { start: 0, title: "Childhood" },
+      { start: 35, title: "School in Pabna" },
+      { start: 60, title: "College in Dhaka" },
+      { start: 120, title: "University" },
+      { start: 155, title: "Graduation" },
+      { start: 185, title: "Becoming an engineer" },
+    ],
+  },
+
   quickFacts: [
     { label: "Currently", value: "Embedded Systems Engineer, Frontier Semiconductor" },
     { label: "Focus", value: "Firmware, motion control, PCB design" },

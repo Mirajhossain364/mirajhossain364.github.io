@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import {
   Github,
@@ -17,6 +17,14 @@ import {
   Menu,
   X,
   ChevronDown,
+  Play,
+  Pause,
+  Volume2,
+  VolumeX,
+  Maximize,
+  Minimize,
+  RotateCcw,
+  Loader2,
 } from 'lucide-react';
 
 import { DATA } from './data';
@@ -268,6 +276,320 @@ const Hero = () => (
   </section>
 );
 
+// --- VIDEO PLAYER ---
+const formatTime = (s) => {
+  if (!Number.isFinite(s)) return '0:00';
+  return `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+};
+
+const chapterIndexAt = (chapters, t) => {
+  let idx = 0;
+  chapters.forEach((c, i) => {
+    if (t >= c.start) idx = i;
+  });
+  return idx;
+};
+
+// startAt / endAt let the player skip the tool's blank first frame and its logo outro
+const VideoPlayer = ({ src, poster, title, startAt = 0, endAt, chapters = [], controllerRef, onChapterChange }) => {
+  const wrapRef = useRef(null);
+  const videoRef = useRef(null);
+  const hideTimer = useRef(null);
+  const frame = useRef(null);
+  const chapterRef = useRef(-1);
+  const [started, setStarted] = useState(false);
+  const [playing, setPlaying] = useState(false);
+  const [ended, setEnded] = useState(false);
+  const [waiting, setWaiting] = useState(false);
+  const [muted, setMuted] = useState(false);
+  const [time, setTime] = useState(0);
+  const [mediaDuration, setMediaDuration] = useState(0);
+  const [buffered, setBuffered] = useState(0);
+  const [controlsVisible, setControlsVisible] = useState(true);
+  const [fullscreen, setFullscreen] = useState(false);
+
+  const end = endAt && mediaDuration ? Math.min(endAt, mediaDuration) : endAt || mediaDuration;
+  const chapter = chapters.length ? chapters[chapterIndexAt(chapters, time)] : null;
+
+  useEffect(() => {
+    const onChange = () => setFullscreen(document.fullscreenElement === wrapRef.current);
+    document.addEventListener('fullscreenchange', onChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', onChange);
+      clearTimeout(hideTimer.current);
+      cancelAnimationFrame(frame.current);
+    };
+  }, []);
+
+  // Smooth progress while playing, and a precise stop at `end`
+  useEffect(() => {
+    if (!playing) return undefined;
+    const tick = () => {
+      const v = videoRef.current;
+      if (end && v.currentTime >= end) {
+        v.pause();
+        v.currentTime = end;
+        setEnded(true);
+        setControlsVisible(true);
+      }
+      setTime(v.currentTime);
+      frame.current = requestAnimationFrame(tick);
+    };
+    frame.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame.current);
+  }, [playing, end]);
+
+  useEffect(() => {
+    if (!chapters.length) return;
+    const idx = chapterIndexAt(chapters, time);
+    if (idx !== chapterRef.current) {
+      chapterRef.current = idx;
+      onChapterChange?.(idx);
+    }
+  }, [time, chapters, onChapterChange]);
+
+  // Show controls on activity, then fade them out while the video plays
+  const wake = () => {
+    setControlsVisible(true);
+    clearTimeout(hideTimer.current);
+    hideTimer.current = setTimeout(() => {
+      if (videoRef.current && !videoRef.current.paused) setControlsVisible(false);
+    }, 2500);
+  };
+
+  const play = () => {
+    const v = videoRef.current;
+    if (v.currentTime < startAt || (end && v.currentTime >= end - 0.05)) v.currentTime = startAt;
+    setStarted(true);
+    setEnded(false);
+    v.play().catch(() => {});
+    wake();
+  };
+
+  const togglePlay = () => {
+    if (videoRef.current.paused) play();
+    else {
+      videoRef.current.pause();
+      wake();
+    }
+  };
+
+  const seekTo = (t) => {
+    const v = videoRef.current;
+    v.currentTime = Math.min(Math.max(t, startAt), (end || v.duration || 0) - 0.05);
+    setTime(v.currentTime);
+    setEnded(false);
+    wake();
+  };
+
+  const playFrom = (t) => {
+    seekTo(t);
+    play();
+    wrapRef.current.focus({ preventScroll: true });
+  };
+
+  if (controllerRef) controllerRef.current = { playFrom };
+
+  const toggleMute = () => {
+    const v = videoRef.current;
+    v.muted = !v.muted;
+    setMuted(v.muted);
+    wake();
+  };
+
+  const toggleFullscreen = () => {
+    const el = wrapRef.current;
+    if (document.fullscreenElement) document.exitFullscreen();
+    else if (el.requestFullscreen) el.requestFullscreen();
+    else if (videoRef.current.webkitEnterFullscreen) videoRef.current.webkitEnterFullscreen(); // iPhone Safari
+    wake();
+  };
+
+  const onKeyDown = (e) => {
+    const keys = {
+      ' ': togglePlay,
+      k: togglePlay,
+      m: toggleMute,
+      f: toggleFullscreen,
+      ArrowRight: () => seekTo(videoRef.current.currentTime + 5),
+      ArrowLeft: () => seekTo(videoRef.current.currentTime - 5),
+    };
+    if (keys[e.key] && e.target.type !== 'range') {
+      e.preventDefault();
+      keys[e.key]();
+    }
+  };
+
+  const updateBuffered = () => {
+    const v = videoRef.current;
+    if (v.buffered.length && end) setBuffered(Math.min(v.buffered.end(v.buffered.length - 1) / end, 1));
+  };
+
+  const progress = end ? Math.min((time / end) * 100, 100) : 0;
+  const showControls = started && (controlsVisible || !playing);
+  const iconBtn = 'p-2 rounded-md text-white/90 hover:text-white hover:bg-white/10 transition-colors';
+
+  return (
+    <div
+      ref={wrapRef}
+      tabIndex={0}
+      onKeyDown={onKeyDown}
+      onMouseMove={wake}
+      onTouchStart={wake}
+      className={`group relative overflow-hidden bg-black select-none outline-none ${fullscreen ? '' : 'aspect-video rounded-lg border border-line'} ${
+        started && !showControls ? 'cursor-none' : ''
+      }`}
+      aria-label={`${title} video player`}
+    >
+      <video
+        ref={videoRef}
+        src={src}
+        poster={poster}
+        preload="metadata"
+        playsInline
+        className="absolute inset-0 w-full h-full object-contain"
+        onClick={togglePlay}
+        onPlay={() => setPlaying(true)}
+        onPause={() => setPlaying(false)}
+        onEnded={() => { setPlaying(false); setEnded(true); setControlsVisible(true); }}
+        onWaiting={() => setWaiting(true)}
+        onPlaying={() => setWaiting(false)}
+        onCanPlay={() => setWaiting(false)}
+        onSeeked={(e) => setTime(e.currentTarget.currentTime)}
+        onLoadedMetadata={(e) => setMediaDuration(e.currentTarget.duration)}
+        onProgress={updateBuffered}
+      />
+
+      {/* Cover shown before the first play and after the video ends */}
+      {(!started || ended) && (
+        <button
+          onClick={play}
+          className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-gradient-to-t from-black/70 via-black/30 to-black/20 hover:via-black/20 transition-colors"
+          aria-label={ended ? 'Watch again' : `Play ${title}`}
+        >
+          <span className="flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-full bg-white text-black shadow-lg transition-transform group-hover:scale-105">
+            {ended ? <RotateCcw className="w-7 h-7" /> : <Play className="w-7 h-7 md:w-8 md:h-8 ml-1 fill-current" />}
+          </span>
+          <span className="text-white text-sm font-medium drop-shadow">
+            {ended ? 'Watch again' : `Watch · ${formatTime(end)}`}
+          </span>
+        </button>
+      )}
+
+      {waiting && playing && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <Loader2 className="w-10 h-10 text-white/90 animate-spin" />
+        </div>
+      )}
+
+      {/* Control bar */}
+      {!ended && (
+        <div
+          className={`absolute inset-x-0 bottom-0 px-3 md:px-4 pb-2 pt-12 bg-gradient-to-t from-black/85 via-black/45 to-transparent transition-opacity duration-300 ${
+            showControls ? 'opacity-100' : 'opacity-0 pointer-events-none'
+          }`}
+        >
+          {chapter && (
+            <p className="mb-2 px-1 text-xs font-medium text-white/90 truncate">{chapter.title}</p>
+          )}
+          <div className="relative h-1.5 group/bar hover:h-2 transition-all rounded-full bg-white/20">
+            <div className="absolute inset-y-0 left-0 rounded-full bg-white/30" style={{ width: `${buffered * 100}%` }} />
+            <div className="absolute inset-y-0 left-0 rounded-full bg-white" style={{ width: `${progress}%` }} />
+            {end > 0 &&
+              chapters.slice(1).map((c) => (
+                <span key={c.start} className="absolute inset-y-0 w-0.5 bg-black/70" style={{ left: `${(c.start / end) * 100}%` }} />
+              ))}
+            <div
+              className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3.5 h-3.5 rounded-full bg-white shadow opacity-0 group-hover/bar:opacity-100 transition-opacity"
+              style={{ left: `${progress}%` }}
+            />
+            <input
+              type="range"
+              min={0}
+              max={end || 0}
+              step={0.1}
+              value={time}
+              onChange={(e) => seekTo(Number(e.target.value))}
+              className="absolute -inset-y-2 inset-x-0 w-full opacity-0 cursor-pointer"
+              aria-label="Seek"
+              aria-valuetext={`${formatTime(time)} of ${formatTime(end)}`}
+            />
+          </div>
+
+          <div className="mt-1.5 flex items-center gap-1">
+            <button onClick={togglePlay} className={iconBtn} aria-label={playing ? 'Pause' : 'Play'}>
+              {playing ? <Pause className="w-5 h-5 fill-current" /> : <Play className="w-5 h-5 fill-current" />}
+            </button>
+            <button onClick={toggleMute} className={iconBtn} aria-label={muted ? 'Unmute' : 'Mute'}>
+              {muted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+            </button>
+            <span className="ml-1 font-mono text-xs text-white/90 tabular-nums">
+              {formatTime(time)} / {formatTime(end)}
+            </span>
+            <button onClick={toggleFullscreen} className={`${iconBtn} ml-auto`} aria-label={fullscreen ? 'Exit full screen' : 'Full screen'}>
+              {fullscreen ? <Minimize className="w-5 h-5" /> : <Maximize className="w-5 h-5" />}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const Story = () => {
+  const { story } = DATA;
+  const player = useRef(null);
+  const [active, setActive] = useState(0);
+  const runtime = formatTime(story.endAt);
+
+  return (
+    <div className="mt-20 grid lg:grid-cols-[18rem_1fr] gap-x-16 gap-y-8 items-start">
+      <Reveal>
+        <h3 className="text-xl font-semibold text-ink">{story.title}</h3>
+        <p className="mt-3 text-[15px] text-muted leading-relaxed">{story.description}</p>
+        <p className="mt-4 font-mono text-xs text-faint flex flex-wrap gap-x-2 gap-y-1">
+          <span className="whitespace-nowrap">Animated short · {runtime}</span>
+          <span className="whitespace-nowrap">· {story.credit}</span>
+        </p>
+      </Reveal>
+
+      <Reveal delay={0.05} className="lg:row-span-2">
+        <VideoPlayer
+          src={story.video}
+          poster={story.poster}
+          title={story.title}
+          startAt={story.startAt}
+          endAt={story.endAt}
+          chapters={story.chapters}
+          controllerRef={player}
+          onChapterChange={setActive}
+        />
+      </Reveal>
+
+      <Reveal>
+        <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-faint mb-2">Chapters</p>
+        <ol className="grid sm:grid-cols-2 lg:grid-cols-1 gap-x-6">
+          {story.chapters.map((c, i) => (
+            <li key={c.start}>
+              <button
+                onClick={() => player.current?.playFrom(c.start)}
+                className={`w-full flex items-baseline gap-3 py-2 text-left text-sm border-b border-line transition-colors ${
+                  active === i ? 'text-ink font-medium' : 'text-muted hover:text-ink'
+                }`}
+              >
+                <span className={`font-mono text-xs tabular-nums w-9 shrink-0 ${active === i ? 'text-accent' : 'text-faint'}`}>
+                  {formatTime(c.start)}
+                </span>
+                {c.title}
+              </button>
+            </li>
+          ))}
+        </ol>
+      </Reveal>
+    </div>
+  );
+};
+
 // --- ABOUT ---
 const About = () => (
   <section id="about" className="section">
@@ -292,6 +614,8 @@ const About = () => (
         </dl>
       </Reveal>
     </div>
+
+    {DATA.story && <Story />}
 
     <div className="mt-20">
       <Reveal className="mb-8">
